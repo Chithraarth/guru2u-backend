@@ -30,5 +30,7 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/guru2u-backend:${{ github.ref_name }}-${{ github.sha }}
 
       - name: Trigger Portainer stack redeploy
-        if: ${{ secrets.PORTAINER_WEBHOOK_URL != '' }}
-        run: curl -X POST "${{ secrets.PORTAINER_WEBHOOK_URL }}"
+        if: ${{ env.PORTAINER_WEBHOOK_URL != '' }}
+        env:
+          PORTAINER_WEBHOOK_URL: ${{ secrets.PORTAINER_WEBHOOK_URL }}
+        run: curl -X POST "$PORTAINER_WEBHOOK_URL"
