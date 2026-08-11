@@ -21,5 +21,7 @@ export interface ComboReadingInput {
     birthPlace?: string;
     /** Optional base64-encoded recording of the conversation/interview */
     audioBase64?: string;
+    /** BCP-47 language code (e.g. "hi", "ar") the reading content should be written in; defaults to English */
+    language?: string;
 }
 //# sourceMappingURL=comboReadingInput.d.ts.map

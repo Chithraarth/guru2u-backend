@@ -11,5 +11,7 @@ export interface VoiceReadingInput {
     audioBase64: string;
     /** "note" (default) analyzes a short voice note from one speaker; "conversation" analyzes a full recorded conversation, focusing on how the user interacts with others for a richer picture; "date" analyzes a recorded date conversation and gives feedback on the other person's mindset, interest level, and compatibility. */
     mode?: VoiceReadingInputMode;
+    /** BCP-47 language code (e.g. "hi", "ar") the reading content should be written in; defaults to English */
+    language?: string;
 }
 //# sourceMappingURL=voiceReadingInput.d.ts.map

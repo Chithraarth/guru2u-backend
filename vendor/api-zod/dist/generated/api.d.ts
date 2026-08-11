@@ -240,12 +240,15 @@ export declare const DeleteReadingResponse: zod.ZodVoid;
 export declare const CreateFaceReadingBody: zod.ZodObject<{
     imageBase64: zod.ZodString;
     mimeType: zod.ZodOptional<zod.ZodString>;
+    language: zod.ZodOptional<zod.ZodString>;
 }, "strip", zod.ZodTypeAny, {
     imageBase64: string;
     mimeType?: string | undefined;
+    language?: string | undefined;
 }, {
     imageBase64: string;
     mimeType?: string | undefined;
+    language?: string | undefined;
 }>;
 export declare const CreateFaceReadingResponse: zod.ZodObject<{
     id: zod.ZodNumber;
@@ -308,12 +311,15 @@ export declare const CreateFaceReadingResponse: zod.ZodObject<{
 export declare const CreatePalmReadingBody: zod.ZodObject<{
     imageBase64: zod.ZodString;
     mimeType: zod.ZodOptional<zod.ZodString>;
+    language: zod.ZodOptional<zod.ZodString>;
 }, "strip", zod.ZodTypeAny, {
     imageBase64: string;
     mimeType?: string | undefined;
+    language?: string | undefined;
 }, {
     imageBase64: string;
     mimeType?: string | undefined;
+    language?: string | undefined;
 }>;
 export declare const CreatePalmReadingResponse: zod.ZodObject<{
     id: zod.ZodNumber;
@@ -376,11 +382,14 @@ export declare const CreatePalmReadingResponse: zod.ZodObject<{
 export declare const CreateVoiceReadingBody: zod.ZodObject<{
     audioBase64: zod.ZodString;
     mode: zod.ZodOptional<zod.ZodEnum<["note", "conversation", "date"]>>;
+    language: zod.ZodOptional<zod.ZodString>;
 }, "strip", zod.ZodTypeAny, {
     audioBase64: string;
+    language?: string | undefined;
     mode?: "date" | "note" | "conversation" | undefined;
 }, {
     audioBase64: string;
+    language?: string | undefined;
     mode?: "date" | "note" | "conversation" | undefined;
 }>;
 export declare const CreateVoiceReadingResponse: zod.ZodObject<{
@@ -449,10 +458,12 @@ export declare const CreateComboReadingBody: zod.ZodObject<{
     birthTime: zod.ZodOptional<zod.ZodString>;
     birthPlace: zod.ZodOptional<zod.ZodString>;
     audioBase64: zod.ZodOptional<zod.ZodString>;
+    language: zod.ZodOptional<zod.ZodString>;
 }, "strip", zod.ZodTypeAny, {
     context: "interview" | "business" | "relationship" | "general";
     imageBase64?: string | undefined;
     mimeType?: string | undefined;
+    language?: string | undefined;
     audioBase64?: string | undefined;
     birthDate?: string | undefined;
     birthTime?: string | undefined;
@@ -461,6 +472,7 @@ export declare const CreateComboReadingBody: zod.ZodObject<{
     context: "interview" | "business" | "relationship" | "general";
     imageBase64?: string | undefined;
     mimeType?: string | undefined;
+    language?: string | undefined;
     audioBase64?: string | undefined;
     birthDate?: string | undefined;
     birthTime?: string | undefined;
@@ -528,13 +540,16 @@ export declare const CreateAstroReadingBody: zod.ZodObject<{
     birthDate: zod.ZodString;
     birthTime: zod.ZodOptional<zod.ZodString>;
     birthPlace: zod.ZodString;
+    language: zod.ZodOptional<zod.ZodString>;
 }, "strip", zod.ZodTypeAny, {
     birthDate: string;
     birthPlace: string;
+    language?: string | undefined;
     birthTime?: string | undefined;
 }, {
     birthDate: string;
     birthPlace: string;
+    language?: string | undefined;
     birthTime?: string | undefined;
 }>;
 export declare const CreateAstroReadingResponse: zod.ZodObject<{

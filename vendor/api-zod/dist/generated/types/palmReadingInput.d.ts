@@ -10,5 +10,7 @@ export interface PalmReadingInput {
     imageBase64: string;
     /** Image MIME type, defaults to image/jpeg */
     mimeType?: string;
+    /** BCP-47 language code (e.g. "hi", "ar") the reading content should be written in; defaults to English */
+    language?: string;
 }
 //# sourceMappingURL=palmReadingInput.d.ts.map

@@ -12,5 +12,7 @@ export interface AstroReadingInput {
     birthTime?: string;
     /** City / country of birth */
     birthPlace: string;
+    /** BCP-47 language code (e.g. "hi", "ar") the reading content should be written in; defaults to English */
+    language?: string;
 }
 //# sourceMappingURL=astroReadingInput.d.ts.map
