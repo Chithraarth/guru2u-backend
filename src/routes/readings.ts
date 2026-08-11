@@ -1,11 +1,6 @@
 import { Router, type IRouter } from "express";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { requireAuth } from "../middlewares/requireAuth";
-import {
-  getEntitlement,
-  insertReadingConsumingAllowance,
-  type Entitlement,
-} from "../lib/entitlements";
 import { db, readingsTable } from "@workspace/db";
 import {
   CreateFaceReadingBody,
@@ -52,38 +47,6 @@ function isValidCalendarDate(dateStr: string): boolean {
 
 // All reading routes require a signed-in user; data is scoped per user.
 router.use("/readings", requireAuth);
-
-// Blocks a create-reading request when the daily allowance is exhausted.
-// Best-effort pre-check before expensive AI work; the authoritative,
-// race-free check happens in insertReadingConsumingAllowance at insert time.
-async function checkAllowance(req: any, res: any): Promise<Entitlement | null> {
-  const ent = await getEntitlement(req.userId);
-  if (!ent.canRead) {
-    res.status(402).json({
-      error:
-        ent.reason === "no_plan"
-          ? "A subscription or an extra reading purchase is needed to get readings."
-          : "You've used all of today's readings on your plan.",
-      code: ent.reason,
-      entitlement: ent,
-    });
-    return null;
-  }
-  return ent;
-}
-
-// Sent when the allowance was exhausted by a concurrent request between the
-// pre-check and the atomic insert.
-function respondBlocked(res: any, ent: Entitlement): void {
-  res.status(402).json({
-    error:
-      ent.reason === "no_plan"
-        ? "A subscription or an extra reading purchase is needed to get readings."
-        : "You've used all of today's readings on your plan.",
-    code: ent.reason,
-    entitlement: ent,
-  });
-}
 
 router.get("/readings", async (req, res): Promise<void> => {
   const rows = await db
@@ -173,8 +136,6 @@ router.post("/readings/face", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  const allowance = await checkAllowance(req, res);
-  if (!allowance) return;
   const mimeType = parsed.data.mimeType ?? "image/jpeg";
   const analysis = await analyzeFace(parsed.data.imageBase64, mimeType, parsed.data.language);
 
@@ -191,8 +152,7 @@ router.post("/readings/face", async (req, res): Promise<void> => {
     }
   }
 
-  const result = await insertReadingConsumingAllowance(req.userId!, async (tx) => {
-    const [row] = await tx
+  const [row] = await db
     .insert(readingsTable)
     .values({
       userId: req.userId,
@@ -208,13 +168,7 @@ router.post("/readings/face", async (req, res): Promise<void> => {
       portraitImage,
     })
     .returning();
-    return row;
-  });
-  if (result.blocked) {
-    respondBlocked(res, result.blocked);
-    return;
-  }
-  res.status(201).json(GetReadingResponse.parse(serializeReading(result.row)));
+  res.status(201).json(GetReadingResponse.parse(serializeReading(row)));
 });
 
 router.post("/readings/palm", async (req, res): Promise<void> => {
@@ -223,12 +177,9 @@ router.post("/readings/palm", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  const allowance = await checkAllowance(req, res);
-  if (!allowance) return;
   const mimeType = parsed.data.mimeType ?? "image/jpeg";
   const analysis = await analyzePalm(parsed.data.imageBase64, mimeType, parsed.data.language);
-  const result = await insertReadingConsumingAllowance(req.userId!, async (tx) => {
-    const [row] = await tx
+  const [row] = await db
     .insert(readingsTable)
     .values({
       userId: req.userId,
@@ -243,13 +194,7 @@ router.post("/readings/palm", async (req, res): Promise<void> => {
       details: analysis.details,
     })
     .returning();
-    return row;
-  });
-  if (result.blocked) {
-    respondBlocked(res, result.blocked);
-    return;
-  }
-  res.status(201).json(GetReadingResponse.parse(serializeReading(result.row)));
+  res.status(201).json(GetReadingResponse.parse(serializeReading(row)));
 });
 
 router.post("/readings/voice", async (req, res): Promise<void> => {
@@ -258,8 +203,6 @@ router.post("/readings/voice", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  const allowance = await checkAllowance(req, res);
-  if (!allowance) return;
   const audioBuffer = Buffer.from(parsed.data.audioBase64, "base64");
   const MAX_UPLOAD_BYTES = 24 * 1024 * 1024;
   if (audioBuffer.length > MAX_UPLOAD_BYTES) {
@@ -300,8 +243,7 @@ router.post("/readings/voice", async (req, res): Promise<void> => {
     parsed.data.mode ?? "note",
     parsed.data.language,
   );
-  const result = await insertReadingConsumingAllowance(req.userId!, async (tx) => {
-    const [row] = await tx
+  const [row] = await db
     .insert(readingsTable)
     .values({
       userId: req.userId,
@@ -317,13 +259,7 @@ router.post("/readings/voice", async (req, res): Promise<void> => {
       transcript,
     })
     .returning();
-    return row;
-  });
-  if (result.blocked) {
-    respondBlocked(res, result.blocked);
-    return;
-  }
-  res.status(201).json(GetReadingResponse.parse(serializeReading(result.row)));
+  res.status(201).json(GetReadingResponse.parse(serializeReading(row)));
 });
 
 router.post("/readings/astro", async (req, res): Promise<void> => {
@@ -332,8 +268,6 @@ router.post("/readings/astro", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  const allowance = await checkAllowance(req, res);
-  if (!allowance) return;
   const { birthDate, birthTime, birthPlace } = parsed.data;
   if (!isValidCalendarDate(birthDate)) {
     res.status(400).json({ error: "Please provide a valid birth date (YYYY-MM-DD)." });
@@ -361,8 +295,7 @@ router.post("/readings/astro", async (req, res): Promise<void> => {
     todayIso,
     parsed.data.language,
   );
-  const result = await insertReadingConsumingAllowance(req.userId!, async (tx) => {
-    const [row] = await tx
+  const [row] = await db
     .insert(readingsTable)
     .values({
       userId: req.userId,
@@ -381,13 +314,7 @@ router.post("/readings/astro", async (req, res): Promise<void> => {
       dailyHoroscope: analysis.dailyHoroscope,
     })
     .returning();
-    return row;
-  });
-  if (result.blocked) {
-    respondBlocked(res, result.blocked);
-    return;
-  }
-  res.status(201).json(GetReadingResponse.parse(serializeReading(result.row)));
+  res.status(201).json(GetReadingResponse.parse(serializeReading(row)));
 });
 
 router.post("/readings/combo", async (req, res): Promise<void> => {
@@ -396,8 +323,6 @@ router.post("/readings/combo", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  const allowance = await checkAllowance(req, res);
-  if (!allowance) return;
   const { context, imageBase64, mimeType, birthDate, birthTime, birthPlace, audioBase64 } = parsed.data;
   if (!imageBase64 && !birthDate && !audioBase64) {
     res.status(400).json({
@@ -469,8 +394,7 @@ router.post("/readings/combo", async (req, res): Promise<void> => {
     todayIso: new Date().toISOString().slice(0, 10),
     language: parsed.data.language,
   });
-  const result = await insertReadingConsumingAllowance(req.userId!, async (tx) => {
-    const [row] = await tx
+  const [row] = await db
     .insert(readingsTable)
     .values({
       userId: req.userId,
@@ -487,13 +411,7 @@ router.post("/readings/combo", async (req, res): Promise<void> => {
       zodiacSign: analysis.zodiacSign ?? null,
     })
     .returning();
-    return row;
-  });
-  if (result.blocked) {
-    respondBlocked(res, result.blocked);
-    return;
-  }
-  res.status(201).json(GetReadingResponse.parse(serializeReading(result.row)));
+  res.status(201).json(GetReadingResponse.parse(serializeReading(row)));
 });
 
 export default router;
