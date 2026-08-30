@@ -14,11 +14,11 @@ import {
   ListReadingsResponse,
   GetReadingStatsResponse,
 } from "@workspace/api-zod";
-import { generateImageBuffer } from "@workspace/integrations-openai-ai-server/image";
+import { generateImageBuffer } from "@workspace/integrations-gemini-ai-server/image";
 import {
   ensureCompatibleFormat,
   speechToText,
-} from "@workspace/integrations-openai-ai-server/audio";
+} from "@workspace/integrations-gemini-ai-server/audio";
 import {
   analyzeFace,
   analyzePalm,

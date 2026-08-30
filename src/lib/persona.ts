@@ -1,4 +1,7 @@
-import { openai } from "@workspace/integrations-openai-ai-server";
+import { Type, type Schema } from "@google/genai";
+import { gemini } from "@workspace/integrations-gemini-ai-server";
+
+const ANALYSIS_MODEL = "gemini-3.7-flash";
 
 export interface PersonaAnalysis {
   archetype: string;
@@ -12,16 +15,47 @@ export interface PersonaAnalysis {
   portraitPrompt?: string;
 }
 
-const JSON_INSTRUCTIONS = `Respond ONLY with a JSON object with these keys:
-- "archetype": a short persona label starting with "The", e.g. "The Strong Independent One", "The Talkative Charmer", "The Quiet Strategist"
-- "title": one engaging headline sentence about this person
-- "summary": 3-4 sentences summarizing their personality
-- "traits": array of 4-6 short personality trait phrases
-- "strengths": array of 3-5 short strength phrases
-- "guidance": 2-3 sentences of forward-looking guidance about what they should focus on next
-- "interactionTips": array of 4-6 short, bold, actionable coaching tips telling the USER exactly how to handle their next interaction with this person — how to open, when to pause and let them answer, what to say back, what to avoid, and one smart move that will win their agreement or respect. Each tip must be a concrete instruction (start with a verb), specific to THIS person's character, not generic advice.
-- "details": a longer, warm, specific analysis (2-3 paragraphs)
-- "portraitPrompt": a short, respectful visual description for an artistic portrait illustration representing this archetype (style, mood, colors) — do NOT describe the actual person's identity, just an archetypal character`;
+const BASE_ANALYSIS_PROPERTIES = {
+  archetype: {
+    type: Type.STRING,
+    description:
+      'A short persona label starting with "The", e.g. "The Strong Independent One", "The Talkative Charmer", "The Quiet Strategist"',
+  },
+  title: { type: Type.STRING, description: "One engaging headline sentence about this person" },
+  summary: { type: Type.STRING, description: "3-4 sentences summarizing their personality" },
+  traits: {
+    type: Type.ARRAY,
+    items: { type: Type.STRING },
+    description: "4-6 short personality trait phrases",
+  },
+  strengths: {
+    type: Type.ARRAY,
+    items: { type: Type.STRING },
+    description: "3-5 short strength phrases",
+  },
+  guidance: {
+    type: Type.STRING,
+    description: "2-3 sentences of forward-looking guidance about what they should focus on next",
+  },
+  interactionTips: {
+    type: Type.ARRAY,
+    items: { type: Type.STRING },
+    description:
+      "4-6 short, bold, actionable coaching tips telling the USER exactly how to handle their next interaction with this person — how to open, when to pause and let them answer, what to say back, what to avoid, and one smart move that will win their agreement or respect. Each tip must be a concrete instruction (start with a verb), specific to THIS person's character, not generic advice.",
+  },
+  details: { type: Type.STRING, description: "A longer, warm, specific analysis (2-3 paragraphs)" },
+  portraitPrompt: {
+    type: Type.STRING,
+    description:
+      "A short, respectful visual description for an artistic portrait illustration representing this archetype (style, mood, colors) — do NOT describe the actual person's identity, just an archetypal character",
+  },
+} satisfies Record<string, Schema>;
+
+const PERSONA_ANALYSIS_SCHEMA: Schema = {
+  type: Type.OBJECT,
+  properties: BASE_ANALYSIS_PROPERTIES,
+  required: ["archetype", "title", "summary", "traits", "strengths", "guidance"],
+};
 
 // Instructs the model to write all user-visible reading content in the
 // visitor's chosen language. JSON keys stay in English; portraitPrompt stays
@@ -32,11 +66,7 @@ export function languageInstruction(language?: string): string {
 }
 
 function parseAnalysis(raw: string): PersonaAnalysis {
-  const cleaned = raw
-    .trim()
-    .replace(/^```(?:json)?\s*/i, "")
-    .replace(/```\s*$/, "");
-  const parsed = JSON.parse(cleaned) as Partial<PersonaAnalysis>;
+  const parsed = JSON.parse(raw) as Partial<PersonaAnalysis>;
   if (
     !parsed.archetype ||
     !parsed.title ||
@@ -64,33 +94,33 @@ function parseAnalysis(raw: string): PersonaAnalysis {
   };
 }
 
+function textOf(response: Awaited<ReturnType<typeof gemini.models.generateContent>>): string {
+  const text = response.text;
+  if (!text) throw new Error("Gemini returned an empty response");
+  return text;
+}
+
 async function analyzeImage(
   imageBase64: string,
   mimeType: string,
   systemPrompt: string,
   language?: string,
 ): Promise<PersonaAnalysis> {
-  const response = await openai.chat.completions.create({
-    model: "gpt-5.6-terra",
-    max_completion_tokens: 8192,
-    messages: [
-      {
-        role: "system",
-        content: `${systemPrompt}\n\n${JSON_INSTRUCTIONS}${languageInstruction(language)}`,
-      },
+  const response = await gemini.models.generateContent({
+    model: ANALYSIS_MODEL,
+    contents: [
       {
         role: "user",
-        content: [
-          {
-            type: "image_url",
-            image_url: { url: `data:${mimeType};base64,${imageBase64}` },
-          },
-        ],
+        parts: [{ inlineData: { mimeType, data: imageBase64 } }],
       },
     ],
+    config: {
+      systemInstruction: `${systemPrompt}${languageInstruction(language)}`,
+      responseMimeType: "application/json",
+      responseSchema: PERSONA_ANALYSIS_SCHEMA,
+    },
   });
-  const raw = response.choices[0]?.message?.content ?? "";
-  return parseAnalysis(raw);
+  return parseAnalysis(textOf(response));
 }
 
 export async function analyzeFace(
@@ -126,6 +156,36 @@ export interface AstroAnalysis extends PersonaAnalysis {
   dailyHoroscope: string;
 }
 
+const ASTRO_ANALYSIS_SCHEMA: Schema = {
+  type: Type.OBJECT,
+  properties: {
+    ...BASE_ANALYSIS_PROPERTIES,
+    zodiacSign: {
+      type: Type.STRING,
+      description:
+        'Their sun sign, e.g. "Leo"; mention rising/moon hints inside "details" if derivable',
+    },
+    luckyColor: { type: Type.STRING, description: 'Today\'s favourite/lucky color for them, e.g. "Emerald Green"' },
+    luckyNumber: { type: Type.STRING, description: 'Today\'s lucky number as a string, e.g. "7"' },
+    dailyHoroscope: {
+      type: Type.STRING,
+      description: "2-4 sentences of today's horoscope specific to their sign and chart",
+    },
+  },
+  required: [
+    "archetype",
+    "title",
+    "summary",
+    "traits",
+    "strengths",
+    "guidance",
+    "zodiacSign",
+    "luckyColor",
+    "luckyNumber",
+    "dailyHoroscope",
+  ],
+};
+
 export async function analyzeAstrology(
   birthDate: string,
   birthTime: string | undefined,
@@ -133,30 +193,27 @@ export async function analyzeAstrology(
   todayIso: string,
   language?: string,
 ): Promise<AstroAnalysis> {
-  const response = await openai.chat.completions.create({
-    model: "gpt-5.6-terra",
-    max_completion_tokens: 8192,
-    messages: [
-      {
-        role: "system",
-        content: `You are a skilled, warm astrologer for an entertainment app. The birth details belong to a person the USER wants to understand and handle better; describe that person to the user ("they", not "you") and make "guidance" and "interactionTips" practical coaching for how the user should deal with them. Given the person's birth date, birth time (if known), and birth place, produce a full astrology reading: determine their sun sign (and moon/rising sign hints if birth time and place allow), describe their personality through their chart, and give guidance. Also produce TODAY's daily astrology for them (today is ${todayIso}): a daily horoscope, today's favourite/lucky color, and today's lucky number. Be positive, specific, and mystical yet grounded.\n\n${JSON_INSTRUCTIONS}\n- "zodiacSign": their sun sign, e.g. "Leo"; mention rising/moon hints inside "details" if derivable
-- "luckyColor": today's favourite/lucky color for them, e.g. "Emerald Green"
-- "luckyNumber": today's lucky number as a string, e.g. "7"
-- "dailyHoroscope": 2-4 sentences of today's horoscope specific to their sign and chart${languageInstruction(language)}`,
-      },
+  const response = await gemini.models.generateContent({
+    model: ANALYSIS_MODEL,
+    contents: [
       {
         role: "user",
-        content: `Birth date: ${birthDate}\nBirth time: ${birthTime ?? "unknown"}\nBirth place: ${birthPlace}`,
+        parts: [
+          {
+            text: `Birth date: ${birthDate}\nBirth time: ${birthTime ?? "unknown"}\nBirth place: ${birthPlace}`,
+          },
+        ],
       },
     ],
+    config: {
+      systemInstruction: `You are a skilled, warm astrologer for an entertainment app. The birth details belong to a person the USER wants to understand and handle better; describe that person to the user ("they", not "you") and make "guidance" and "interactionTips" practical coaching for how the user should deal with them. Given the person's birth date, birth time (if known), and birth place, produce a full astrology reading: determine their sun sign (and moon/rising sign hints if birth time and place allow), describe their personality through their chart, and give guidance. Also produce TODAY's daily astrology for them (today is ${todayIso}): a daily horoscope, today's favourite/lucky color, and today's lucky number. Be positive, specific, and mystical yet grounded.${languageInstruction(language)}`,
+      responseMimeType: "application/json",
+      responseSchema: ASTRO_ANALYSIS_SCHEMA,
+    },
   });
-  const raw = response.choices[0]?.message?.content ?? "";
+  const raw = textOf(response);
   const base = parseAnalysis(raw);
-  const cleaned = raw
-    .trim()
-    .replace(/^```(?:json)?\s*/i, "")
-    .replace(/```\s*$/, "");
-  const extra = JSON.parse(cleaned) as Partial<AstroAnalysis>;
+  const extra = JSON.parse(raw) as Partial<AstroAnalysis>;
   if (!extra.zodiacSign || !extra.luckyColor || !extra.luckyNumber || !extra.dailyHoroscope) {
     throw new Error("AI response missing astrology fields");
   }
@@ -178,6 +235,15 @@ const COMBO_CONTEXT_FOCUS: Record<ComboContext, string> = {
   general: `CONTEXT: GENERAL. The user wants to understand this person better. Give a complete, honest character picture and practical guidance for dealing with them.`,
 };
 
+const COMBO_ANALYSIS_SCHEMA: Schema = {
+  type: Type.OBJECT,
+  properties: {
+    ...BASE_ANALYSIS_PROPERTIES,
+    zodiacSign: { type: Type.STRING, description: "Their sun sign derived from the birth date, if provided" },
+  },
+  required: ["archetype", "title", "summary", "traits", "strengths", "guidance"],
+};
+
 export async function analyzeCombo(input: {
   context: ComboContext;
   imageBase64?: string;
@@ -194,15 +260,9 @@ export async function analyzeCombo(input: {
   if (input.birthDate) sources.push("their birth details (read their astrological chart)");
   if (input.transcript) sources.push("a transcript of the actual conversation (read what they say and how)");
 
-  const userContent: Array<
-    | { type: "text"; text: string }
-    | { type: "image_url"; image_url: { url: string } }
-  > = [];
+  const parts: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }> = [];
   if (input.imageBase64) {
-    userContent.push({
-      type: "image_url",
-      image_url: { url: `data:${input.mimeType ?? "image/jpeg"};base64,${input.imageBase64}` },
-    });
+    parts.push({ inlineData: { mimeType: input.mimeType ?? "image/jpeg", data: input.imageBase64 } });
   }
   const textParts: string[] = [];
   if (input.birthDate) {
@@ -214,26 +274,23 @@ export async function analyzeCombo(input: {
     textParts.push(`Transcript of the conversation:\n\n"${input.transcript}"`);
   }
   if (textParts.length === 0) textParts.push("Read this person from the photo.");
-  userContent.push({ type: "text", text: textParts.join("\n\n") });
+  parts.push({ text: textParts.join("\n\n") });
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-5.6-terra",
-    max_completion_tokens: 8192,
-    messages: [
-      {
-        role: "system",
-        content: `You are an elite people-reader for an entertainment app, combining face reading, astrology, and conversation analysis into one unified judgment of a person. You have been given: ${sources.join("; ")}.\n\n${COMBO_CONTEXT_FOCUS[input.context]}\n\nCross-reference every source you have: where face, chart, and words agree, state conclusions confidently; where they conflict, point out the tension (e.g. "their words are confident but their expression is guarded"). In "details", write a deep 3-5 paragraph profile covering: what type of person they are (sincere/calculated, innocent/experienced, intellectual/instinctive, confident/insecure), their emotional state, their true motivations and what they want from the user, honesty and trust signals, and clear green/red flags — always with evidence from the sources. Be honest and specific rather than flattering; stay respectful, never cruel.\n\n${JSON_INSTRUCTIONS}${input.birthDate ? '\n- "zodiacSign": their sun sign derived from the birth date' : ""}${languageInstruction(input.language)}`,
-      },
-      { role: "user", content: userContent },
-    ],
+  const response = await gemini.models.generateContent({
+    model: ANALYSIS_MODEL,
+    contents: [{ role: "user", parts }],
+    config: {
+      systemInstruction: `You are an elite people-reader for an entertainment app, combining face reading, astrology, and conversation analysis into one unified judgment of a person. You have been given: ${sources.join("; ")}.\n\n${COMBO_CONTEXT_FOCUS[input.context]}\n\nCross-reference every source you have: where face, chart, and words agree, state conclusions confidently; where they conflict, point out the tension (e.g. "their words are confident but their expression is guarded"). In "details", write a deep 3-5 paragraph profile covering: what type of person they are (sincere/calculated, innocent/experienced, intellectual/instinctive, confident/insecure), their emotional state, their true motivations and what they want from the user, honesty and trust signals, and clear green/red flags — always with evidence from the sources. Be honest and specific rather than flattering; stay respectful, never cruel.${languageInstruction(input.language)}`,
+      responseMimeType: "application/json",
+      responseSchema: COMBO_ANALYSIS_SCHEMA,
+    },
   });
-  const raw = response.choices[0]?.message?.content ?? "";
+  const raw = textOf(response);
   const base = parseAnalysis(raw);
   let zodiacSign: string | undefined;
   if (input.birthDate) {
     try {
-      const cleaned = raw.trim().replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "");
-      const extra = JSON.parse(cleaned) as { zodiacSign?: string };
+      const extra = JSON.parse(raw) as { zodiacSign?: string };
       zodiacSign = extra.zodiacSign;
     } catch {
       // zodiac sign is best-effort in combo readings
@@ -270,25 +327,28 @@ Set "archetype" to a label for the DATE (the other person), e.g. "The Genuinely 
       : mode === "conversation"
       ? `You are a perceptive conversation analyst and people-reader for an entertainment app. You are given the transcript of a full conversation that may include multiple speakers. Your job is to give the user a clear, detailed picture of the person they were talking to (and/or the primary speaker): what type of person they are, how they interact — do they listen or dominate, ask questions or tell stories, agree easily or push back, use humor, show empathy, lead or follow? Because you can observe real interaction, give a rich, complete picture.\n\n${PERSON_PROFILE_INSTRUCTIONS}`
       : `You are a perceptive conversation analyst and people-reader for an entertainment app. The recording is of a person the USER wants to understand and handle better. From how the person talks — word choice, energy, pace implied by phrasing, topics, confidence — build a clear, detailed picture of who this person is, and make "guidance" and "interactionTips" practical coaching for how the user should deal with them.\n\n${PERSON_PROFILE_INSTRUCTIONS}`;
-  const response = await openai.chat.completions.create({
-    model: "gpt-5.6-terra",
-    max_completion_tokens: 8192,
-    messages: [
-      {
-        role: "system",
-        content: `${systemPrompt}\n\n${JSON_INSTRUCTIONS}${languageInstruction(language)}`,
-      },
+  const response = await gemini.models.generateContent({
+    model: ANALYSIS_MODEL,
+    contents: [
       {
         role: "user",
-        content:
-          mode === "date"
-            ? `Here is the transcript of my date conversation. Please debrief me on my date:\n\n"${transcript}"`
-            : mode === "conversation"
-            ? `Here is the transcript of the recorded conversation:\n\n"${transcript}"`
-            : `Here is the transcript of what the person said:\n\n"${transcript}"`,
+        parts: [
+          {
+            text:
+              mode === "date"
+                ? `Here is the transcript of my date conversation. Please debrief me on my date:\n\n"${transcript}"`
+                : mode === "conversation"
+                ? `Here is the transcript of the recorded conversation:\n\n"${transcript}"`
+                : `Here is the transcript of what the person said:\n\n"${transcript}"`,
+          },
+        ],
       },
     ],
+    config: {
+      systemInstruction: `${systemPrompt}${languageInstruction(language)}`,
+      responseMimeType: "application/json",
+      responseSchema: PERSONA_ANALYSIS_SCHEMA,
+    },
   });
-  const raw = response.choices[0]?.message?.content ?? "";
-  return parseAnalysis(raw);
+  return parseAnalysis(textOf(response));
 }

@@ -12,7 +12,7 @@
   "dependencies": {
     "@workspace/api-zod": "file:./vendor/api-zod",
     "@workspace/db": "file:./vendor/db",
-    "@workspace/integrations-openai-ai-server": "file:./vendor/integrations-openai-ai-server",
+    "@workspace/integrations-gemini-ai-server": "file:./vendor/integrations-gemini-ai-server",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "drizzle-orm": "^0.45.2",

@@ -9,18 +9,18 @@ import pRetry, { AbortError } from "p-retry";
  *
  * USAGE:
  * ```typescript
- * import { batchProcess } from "@workspace/integrations-openai-ai-server/batch";
- * import { openai } from "@workspace/integrations-openai-ai-server";
+ * import { batchProcess } from "@workspace/integrations-gemini-ai-server/batch";
+ * import { gemini } from "@workspace/integrations-gemini-ai-server";
  *
  * const results = await batchProcess(
  *   artworks,
  *   async (artwork) => {
- *     const response = await openai.chat.completions.create({
- *       model: "gpt-5.6-terra",
- *       messages: [{ role: "user", content: `Categorize: ${artwork.name}` }],
- *       response_format: { type: "json_object" },
+ *     const response = await gemini.models.generateContent({
+ *       model: "gemini-3.7-flash",
+ *       contents: [{ role: "user", parts: [{ text: `Categorize: ${artwork.name}` }] }],
+ *       config: { responseMimeType: "application/json" },
  *     });
- *     return JSON.parse(response.choices[0]?.message?.content || "{}");
+ *     return JSON.parse(response.text || "{}");
  *   },
  *   { concurrency: 2, retries: 5 }
  * );
