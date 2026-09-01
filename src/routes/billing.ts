@@ -23,6 +23,11 @@ const READING_PACKS: Record<string, number> = {
 
 router.use("/billing", requireAuth);
 
+router.get("/billing/status", async (req, res): Promise<void> => {
+  const [user] = await db.select().from(usersTable).where(eq(usersTable.id, req.userId!));
+  res.json({ scansRemaining: user?.scansRemaining ?? 0 });
+});
+
 const VerifyBody = z.object({
   purchaseToken: z.string().min(1),
   productId: z.string().min(1),
