@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { requireAuth } from "../middlewares/requireAuth";
-import { db, readingsTable } from "@workspace/db";
+import { db, readingsTable, usersTable } from "@workspace/db";
 import {
   CreateFaceReadingBody,
   CreatePalmReadingBody,
@@ -31,6 +31,19 @@ const router: IRouter = Router();
 
 function serializeReading<T extends { createdAt: Date }>(row: T) {
   return { ...row, createdAt: row.createdAt.toISOString() };
+}
+
+// Atomic conditional decrement — the WHERE clause is checked by Postgres
+// itself, not read-then-written in JS, so two concurrent reading requests
+// can't both pass a stale "credits > 0" check and drive the count negative.
+// Returns the updated user, or null if there were no credits to spend.
+async function decrementScanCredit(userId: string) {
+  const [user] = await db
+    .update(usersTable)
+    .set({ scansRemaining: sql`${usersTable.scansRemaining} - 1` })
+    .where(sql`${usersTable.id} = ${userId} AND ${usersTable.scansRemaining} > 0`)
+    .returning();
+  return user ?? null;
 }
 
 function isValidCalendarDate(dateStr: string): boolean {
@@ -136,6 +149,12 @@ router.post("/readings/face", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
+  const debited = await decrementScanCredit(req.userId!);
+  if (!debited) {
+    res.status(402).json({ error: "out_of_credits", message: "You're out of reading credits. Buy more to continue." });
+    return;
+  }
+
   const mimeType = parsed.data.mimeType ?? "image/jpeg";
   const analysis = await analyzeFace(parsed.data.imageBase64, mimeType, parsed.data.language);
 
@@ -177,6 +196,12 @@ router.post("/readings/palm", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
+  const debited = await decrementScanCredit(req.userId!);
+  if (!debited) {
+    res.status(402).json({ error: "out_of_credits", message: "You're out of reading credits. Buy more to continue." });
+    return;
+  }
+
   const mimeType = parsed.data.mimeType ?? "image/jpeg";
   const analysis = await analyzePalm(parsed.data.imageBase64, mimeType, parsed.data.language);
   const [row] = await db
@@ -203,6 +228,12 @@ router.post("/readings/voice", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
+  const debited = await decrementScanCredit(req.userId!);
+  if (!debited) {
+    res.status(402).json({ error: "out_of_credits", message: "You're out of reading credits. Buy more to continue." });
+    return;
+  }
+
   const audioBuffer = Buffer.from(parsed.data.audioBase64, "base64");
   const MAX_UPLOAD_BYTES = 24 * 1024 * 1024;
   if (audioBuffer.length > MAX_UPLOAD_BYTES) {
@@ -268,6 +299,12 @@ router.post("/readings/astro", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
+  const debited = await decrementScanCredit(req.userId!);
+  if (!debited) {
+    res.status(402).json({ error: "out_of_credits", message: "You're out of reading credits. Buy more to continue." });
+    return;
+  }
+
   const { birthDate, birthTime, birthPlace } = parsed.data;
   if (!isValidCalendarDate(birthDate)) {
     res.status(400).json({ error: "Please provide a valid birth date (YYYY-MM-DD)." });
@@ -332,6 +369,12 @@ router.post("/readings/combo", async (req, res): Promise<void> => {
   }
   if (birthDate && !isValidCalendarDate(birthDate)) {
     res.status(400).json({ error: "Please provide a valid birth date (YYYY-MM-DD)." });
+    return;
+  }
+
+  const debited = await decrementScanCredit(req.userId!);
+  if (!debited) {
+    res.status(402).json({ error: "out_of_credits", message: "You're out of reading credits. Buy more to continue." });
     return;
   }
 
