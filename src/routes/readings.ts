@@ -243,7 +243,18 @@ router.post("/readings/voice", async (req, res): Promise<void> => {
     });
     return;
   }
-  const { buffer, format } = await ensureCompatibleFormat(audioBuffer);
+  let buffer: Buffer;
+  let format: "wav" | "mp3";
+  try {
+    ({ buffer, format } = await ensureCompatibleFormat(audioBuffer));
+  } catch (err) {
+    req.log.error({ err }, "Voice audio conversion failed");
+    res.status(422).json({
+      error:
+        "We couldn't process that recording. It may be in an unsupported format — try a shorter or clearer one.",
+    });
+    return;
+  }
   if (buffer.length > 25 * 1024 * 1024) {
     res.status(413).json({
       error:
