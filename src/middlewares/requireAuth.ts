@@ -33,7 +33,8 @@ export async function requireAuth(
       .values({ id: decoded.uid, email: decoded.email ?? null })
       .onConflictDoNothing();
     next();
-  } catch {
+  } catch (err) {
+    req.log.warn({ err }, "Auth token verification failed");
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
