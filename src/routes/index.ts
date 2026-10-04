@@ -7,7 +7,9 @@ const router: IRouter = Router();
 
 router.use(healthRouter);
 router.use(readingsRouter);
-router.use(billingRouter);
+// Webhooks first: billingRouter applies requireAuth to every /billing path,
+// which would reject Google's and Apple's unauthenticated callbacks.
 router.use(billingWebhookRouter);
+router.use(billingRouter);
 
 export default router;

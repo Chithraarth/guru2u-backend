@@ -8,6 +8,7 @@ import {
   acknowledgeProductPurchase,
   consumeProductPurchase,
 } from "../lib/googlePlay";
+import { verifySignedNotification, verifySignedTransaction } from "../lib/appStore";
 
 // Needs requireAuth — mount under the authenticated section.
 const router: IRouter = Router();
@@ -16,7 +17,8 @@ const router: IRouter = Router();
 const webhookRouter: IRouter = Router();
 
 // Maps each one-time product SKU to how many reading credits it grants. Add
-// an entry here for every consumable product created in Play Console.
+// an entry here for every consumable product created in Play Console and
+// App Store Connect (both stores use the same product IDs).
 const READING_PACKS: Record<string, number> = {
   reading_pack_60: 60,
 };
@@ -29,9 +31,18 @@ router.get("/billing/status", async (req, res): Promise<void> => {
 });
 
 const VerifyBody = z.object({
+  // Android: the Play purchase token. iOS: the StoreKit 2 signed transaction (JWS).
   purchaseToken: z.string().min(1),
   productId: z.string().min(1),
+  // Older Android builds don't send this, so it defaults to android.
+  platform: z.enum(["android", "ios"]).default("android"),
 });
+
+// Apple transactions are stored under their transaction ID rather than the
+// JWS, which can be re-signed (with a new signedDate) for the same purchase.
+function appleTransactionKey(transactionId: string): string {
+  return `apple:${transactionId}`;
+}
 
 router.post("/billing/verify", async (req, res): Promise<void> => {
   const parsed = VerifyBody.safeParse(req.body);
@@ -39,11 +50,41 @@ router.post("/billing/verify", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  const { purchaseToken, productId } = parsed.data;
+  const { purchaseToken, productId, platform } = parsed.data;
 
   const scansGranted = READING_PACKS[productId];
   if (!scansGranted) {
     res.status(400).json({ error: "Unknown product" });
+    return;
+  }
+
+  if (platform === "ios") {
+    let transaction;
+    try {
+      transaction = await verifySignedTransaction(purchaseToken);
+    } catch (err) {
+      req.log.warn({ err }, "Rejected App Store transaction");
+      res.status(400).json({ error: "This purchase isn't valid." });
+      return;
+    }
+    if (!transaction.transactionId || transaction.productId !== productId || transaction.revocationDate) {
+      res.status(400).json({ error: "This purchase isn't valid." });
+      return;
+    }
+    try {
+      // Each Apple transaction ID can only ever be credited once, to whoever
+      // reports it first, so a signed transaction can't be replayed.
+      const user = await grantReadingCredits(
+        req.userId!,
+        productId,
+        appleTransactionKey(transaction.transactionId),
+        scansGranted,
+      );
+      res.json({ scansRemaining: user.scansRemaining });
+    } catch (err) {
+      req.log.error({ err }, "Failed to credit App Store purchase");
+      res.status(500).json({ error: "Failed to verify purchase" });
+    }
     return;
   }
 
@@ -182,6 +223,43 @@ webhookRouter.post("/billing/rtdn", async (req, res): Promise<void> => {
     }
   } catch (err) {
     req.log.error({ err }, "Failed to process RTDN notification");
+  }
+});
+
+// App Store Server Notifications V2. Set this URL (…/api/billing/apple-notifications)
+// as the Production and Sandbox server URL in App Store Connect. The payload is
+// signed by Apple, so no shared secret is needed.
+webhookRouter.post("/billing/apple-notifications", async (req, res): Promise<void> => {
+  const signedPayload = (req.body as { signedPayload?: string })?.signedPayload;
+  if (!signedPayload) {
+    res.status(400).json({ error: "Missing signedPayload" });
+    return;
+  }
+
+  let notification;
+  try {
+    notification = await verifySignedNotification(signedPayload);
+  } catch (err) {
+    req.log.warn({ err }, "Rejected App Store notification");
+    res.status(400).json({ error: "Invalid notification" });
+    return;
+  }
+
+  try {
+    // REFUND: Apple refunded the purchase. REVOKE: Family Sharing access ended.
+    const type = notification.notificationType;
+    const signedTransaction = notification.data?.signedTransactionInfo;
+    if ((type === "REFUND" || type === "REVOKE") && signedTransaction) {
+      const transaction = await verifySignedTransaction(signedTransaction);
+      if (transaction.transactionId) {
+        await revokeReadingCredits(appleTransactionKey(transaction.transactionId));
+      }
+    }
+    res.status(200).end();
+  } catch (err) {
+    // A non-2xx makes Apple retry later, which is what we want here.
+    req.log.error({ err }, "Failed to process App Store notification");
+    res.status(500).end();
   }
 });
 
