@@ -10,6 +10,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@apple/app-store-server-library": "^3.1.0",
     "@workspace/api-zod": "file:./vendor/api-zod",
     "@workspace/db": "file:./vendor/db",
     "@workspace/integrations-gemini-ai-server": "file:./vendor/integrations-gemini-ai-server",
