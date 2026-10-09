@@ -6,6 +6,12 @@ import { logger } from "./lib/logger";
 
 const app: Express = express();
 
+// API responses are per-user and change constantly (credit balance, reading
+// history). Express's default ETags let iOS revalidate cached copies and get
+// a bodiless 304, which the mobile client treats as an error — so the Home
+// balance showed "—". Never let clients or proxies cache API responses.
+app.set("etag", false);
+
 app.use(
   pinoHttp({
     logger,
@@ -30,6 +36,10 @@ app.use(cors({ credentials: true, origin: true }));
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
+app.use("/api", (_req: Request, res: Response, next: NextFunction) => {
+  res.set("Cache-Control", "no-store");
+  next();
+});
 app.use("/api", router);
 
 app.use((req: Request, res: Response) => {
