@@ -20,7 +20,9 @@ const webhookRouter: IRouter = Router();
 // an entry here for every consumable product created in Play Console and
 // App Store Connect (both stores use the same product IDs).
 const READING_PACKS: Record<string, number> = {
-  reading_pack_60: 60,
+  // Store product IDs can't be renamed: this pack now grants 30 readings
+  // (sold as "30 Reading Credits") but keeps its original ID.
+  reading_pack_60: 30,
 };
 
 router.use("/billing", requireAuth);
