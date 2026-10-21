@@ -47,6 +47,21 @@ export const ListReadingsResponseItem = zod.object({
     "date": zod.string().optional()
   }).nullish().describe('Personal daily reading extras (the user\'s own astro reading)'),
   "compatibility": zod.string().nullish().describe('How things will go between the user and the person read'),
+  "judgment": zod.object({
+    "overall": zod.number(),
+    "verdict": zod.enum(['good', 'mixed', 'careful']),
+    "verdictText": zod.string(),
+    "scores": zod.object({
+      "trust": zod.number(),
+      "honesty": zod.number(),
+      "kindness": zod.number(),
+      "communication": zod.number(),
+      "business": zod.number(),
+      "relationship": zod.number()
+    }),
+    "business": zod.string(),
+    "relationship": zod.string()
+  }).nullish().describe('1-100% judgment of the person read'),
   "createdAt": zod.string()
 })
 export const ListReadingsResponse = zod.array(ListReadingsResponseItem)
@@ -100,6 +115,21 @@ export const GetReadingResponse = zod.object({
     "date": zod.string().optional()
   }).nullish().describe('Personal daily reading extras (the user\'s own astro reading)'),
   "compatibility": zod.string().nullish().describe('How things will go between the user and the person read'),
+  "judgment": zod.object({
+    "overall": zod.number(),
+    "verdict": zod.enum(['good', 'mixed', 'careful']),
+    "verdictText": zod.string(),
+    "scores": zod.object({
+      "trust": zod.number(),
+      "honesty": zod.number(),
+      "kindness": zod.number(),
+      "communication": zod.number(),
+      "business": zod.number(),
+      "relationship": zod.number()
+    }),
+    "business": zod.string(),
+    "relationship": zod.string()
+  }).nullish().describe('1-100% judgment of the person read'),
   "createdAt": zod.string()
 })
 
@@ -150,6 +180,21 @@ export const CreateFaceReadingResponse = zod.object({
     "date": zod.string().optional()
   }).nullish().describe('Personal daily reading extras (the user\'s own astro reading)'),
   "compatibility": zod.string().nullish().describe('How things will go between the user and the person read'),
+  "judgment": zod.object({
+    "overall": zod.number(),
+    "verdict": zod.enum(['good', 'mixed', 'careful']),
+    "verdictText": zod.string(),
+    "scores": zod.object({
+      "trust": zod.number(),
+      "honesty": zod.number(),
+      "kindness": zod.number(),
+      "communication": zod.number(),
+      "business": zod.number(),
+      "relationship": zod.number()
+    }),
+    "business": zod.string(),
+    "relationship": zod.string()
+  }).nullish().describe('1-100% judgment of the person read'),
   "createdAt": zod.string()
 })
 
@@ -190,6 +235,21 @@ export const CreatePalmReadingResponse = zod.object({
     "date": zod.string().optional()
   }).nullish().describe('Personal daily reading extras (the user\'s own astro reading)'),
   "compatibility": zod.string().nullish().describe('How things will go between the user and the person read'),
+  "judgment": zod.object({
+    "overall": zod.number(),
+    "verdict": zod.enum(['good', 'mixed', 'careful']),
+    "verdictText": zod.string(),
+    "scores": zod.object({
+      "trust": zod.number(),
+      "honesty": zod.number(),
+      "kindness": zod.number(),
+      "communication": zod.number(),
+      "business": zod.number(),
+      "relationship": zod.number()
+    }),
+    "business": zod.string(),
+    "relationship": zod.string()
+  }).nullish().describe('1-100% judgment of the person read'),
   "createdAt": zod.string()
 })
 
@@ -230,6 +290,21 @@ export const CreateVoiceReadingResponse = zod.object({
     "date": zod.string().optional()
   }).nullish().describe('Personal daily reading extras (the user\'s own astro reading)'),
   "compatibility": zod.string().nullish().describe('How things will go between the user and the person read'),
+  "judgment": zod.object({
+    "overall": zod.number(),
+    "verdict": zod.enum(['good', 'mixed', 'careful']),
+    "verdictText": zod.string(),
+    "scores": zod.object({
+      "trust": zod.number(),
+      "honesty": zod.number(),
+      "kindness": zod.number(),
+      "communication": zod.number(),
+      "business": zod.number(),
+      "relationship": zod.number()
+    }),
+    "business": zod.string(),
+    "relationship": zod.string()
+  }).nullish().describe('1-100% judgment of the person read'),
   "createdAt": zod.string()
 })
 
@@ -275,6 +350,21 @@ export const CreateComboReadingResponse = zod.object({
     "date": zod.string().optional()
   }).nullish().describe('Personal daily reading extras (the user\'s own astro reading)'),
   "compatibility": zod.string().nullish().describe('How things will go between the user and the person read'),
+  "judgment": zod.object({
+    "overall": zod.number(),
+    "verdict": zod.enum(['good', 'mixed', 'careful']),
+    "verdictText": zod.string(),
+    "scores": zod.object({
+      "trust": zod.number(),
+      "honesty": zod.number(),
+      "kindness": zod.number(),
+      "communication": zod.number(),
+      "business": zod.number(),
+      "relationship": zod.number()
+    }),
+    "business": zod.string(),
+    "relationship": zod.string()
+  }).nullish().describe('1-100% judgment of the person read'),
   "createdAt": zod.string()
 })
 
@@ -317,6 +407,21 @@ export const CreateAstroReadingResponse = zod.object({
     "date": zod.string().optional()
   }).nullish().describe('Personal daily reading extras (the user\'s own astro reading)'),
   "compatibility": zod.string().nullish().describe('How things will go between the user and the person read'),
+  "judgment": zod.object({
+    "overall": zod.number(),
+    "verdict": zod.enum(['good', 'mixed', 'careful']),
+    "verdictText": zod.string(),
+    "scores": zod.object({
+      "trust": zod.number(),
+      "honesty": zod.number(),
+      "kindness": zod.number(),
+      "communication": zod.number(),
+      "business": zod.number(),
+      "relationship": zod.number()
+    }),
+    "business": zod.string(),
+    "relationship": zod.string()
+  }).nullish().describe('1-100% judgment of the person read'),
   "createdAt": zod.string()
 })
 

@@ -63,6 +63,63 @@ export declare const ListReadingsResponseItem: zod.ZodObject<{
         date?: string | undefined;
     }>>>;
     compatibility: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    judgment: zod.ZodOptional<zod.ZodNullable<zod.ZodObject<{
+        overall: zod.ZodNumber;
+        verdict: zod.ZodEnum<["good", "mixed", "careful"]>;
+        verdictText: zod.ZodString;
+        scores: zod.ZodObject<{
+            trust: zod.ZodNumber;
+            honesty: zod.ZodNumber;
+            kindness: zod.ZodNumber;
+            communication: zod.ZodNumber;
+            business: zod.ZodNumber;
+            relationship: zod.ZodNumber;
+        }, "strip", zod.ZodTypeAny, {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        }, {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        }>;
+        business: zod.ZodString;
+        relationship: zod.ZodString;
+    }, "strip", zod.ZodTypeAny, {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    }, {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    }>>>;
     createdAt: zod.ZodString;
 }, "strip", zod.ZodTypeAny, {
     id: number;
@@ -92,6 +149,21 @@ export declare const ListReadingsResponseItem: zod.ZodObject<{
         date?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
+    judgment?: {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    } | null | undefined;
 }, {
     id: number;
     kind: "face" | "palm" | "voice" | "astro" | "combo";
@@ -120,6 +192,21 @@ export declare const ListReadingsResponseItem: zod.ZodObject<{
         date?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
+    judgment?: {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    } | null | undefined;
 }>;
 export declare const ListReadingsResponse: zod.ZodArray<zod.ZodObject<{
     id: zod.ZodNumber;
@@ -164,6 +251,63 @@ export declare const ListReadingsResponse: zod.ZodArray<zod.ZodObject<{
         date?: string | undefined;
     }>>>;
     compatibility: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    judgment: zod.ZodOptional<zod.ZodNullable<zod.ZodObject<{
+        overall: zod.ZodNumber;
+        verdict: zod.ZodEnum<["good", "mixed", "careful"]>;
+        verdictText: zod.ZodString;
+        scores: zod.ZodObject<{
+            trust: zod.ZodNumber;
+            honesty: zod.ZodNumber;
+            kindness: zod.ZodNumber;
+            communication: zod.ZodNumber;
+            business: zod.ZodNumber;
+            relationship: zod.ZodNumber;
+        }, "strip", zod.ZodTypeAny, {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        }, {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        }>;
+        business: zod.ZodString;
+        relationship: zod.ZodString;
+    }, "strip", zod.ZodTypeAny, {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    }, {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    }>>>;
     createdAt: zod.ZodString;
 }, "strip", zod.ZodTypeAny, {
     id: number;
@@ -193,6 +337,21 @@ export declare const ListReadingsResponse: zod.ZodArray<zod.ZodObject<{
         date?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
+    judgment?: {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    } | null | undefined;
 }, {
     id: number;
     kind: "face" | "palm" | "voice" | "astro" | "combo";
@@ -221,6 +380,21 @@ export declare const ListReadingsResponse: zod.ZodArray<zod.ZodObject<{
         date?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
+    judgment?: {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    } | null | undefined;
 }>, "many">;
 /**
  * @summary Summary stats about readings
@@ -303,6 +477,63 @@ export declare const GetReadingResponse: zod.ZodObject<{
         date?: string | undefined;
     }>>>;
     compatibility: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    judgment: zod.ZodOptional<zod.ZodNullable<zod.ZodObject<{
+        overall: zod.ZodNumber;
+        verdict: zod.ZodEnum<["good", "mixed", "careful"]>;
+        verdictText: zod.ZodString;
+        scores: zod.ZodObject<{
+            trust: zod.ZodNumber;
+            honesty: zod.ZodNumber;
+            kindness: zod.ZodNumber;
+            communication: zod.ZodNumber;
+            business: zod.ZodNumber;
+            relationship: zod.ZodNumber;
+        }, "strip", zod.ZodTypeAny, {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        }, {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        }>;
+        business: zod.ZodString;
+        relationship: zod.ZodString;
+    }, "strip", zod.ZodTypeAny, {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    }, {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    }>>>;
     createdAt: zod.ZodString;
 }, "strip", zod.ZodTypeAny, {
     id: number;
@@ -332,6 +563,21 @@ export declare const GetReadingResponse: zod.ZodObject<{
         date?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
+    judgment?: {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    } | null | undefined;
 }, {
     id: number;
     kind: "face" | "palm" | "voice" | "astro" | "combo";
@@ -360,6 +606,21 @@ export declare const GetReadingResponse: zod.ZodObject<{
         date?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
+    judgment?: {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    } | null | undefined;
 }>;
 /**
  * @summary Delete a reading
@@ -431,6 +692,63 @@ export declare const CreateFaceReadingResponse: zod.ZodObject<{
         date?: string | undefined;
     }>>>;
     compatibility: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    judgment: zod.ZodOptional<zod.ZodNullable<zod.ZodObject<{
+        overall: zod.ZodNumber;
+        verdict: zod.ZodEnum<["good", "mixed", "careful"]>;
+        verdictText: zod.ZodString;
+        scores: zod.ZodObject<{
+            trust: zod.ZodNumber;
+            honesty: zod.ZodNumber;
+            kindness: zod.ZodNumber;
+            communication: zod.ZodNumber;
+            business: zod.ZodNumber;
+            relationship: zod.ZodNumber;
+        }, "strip", zod.ZodTypeAny, {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        }, {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        }>;
+        business: zod.ZodString;
+        relationship: zod.ZodString;
+    }, "strip", zod.ZodTypeAny, {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    }, {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    }>>>;
     createdAt: zod.ZodString;
 }, "strip", zod.ZodTypeAny, {
     id: number;
@@ -460,6 +778,21 @@ export declare const CreateFaceReadingResponse: zod.ZodObject<{
         date?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
+    judgment?: {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    } | null | undefined;
 }, {
     id: number;
     kind: "face" | "palm" | "voice" | "astro" | "combo";
@@ -488,6 +821,21 @@ export declare const CreateFaceReadingResponse: zod.ZodObject<{
         date?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
+    judgment?: {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    } | null | undefined;
 }>;
 /**
  * @summary Analyze a palm photo and create a palm reading
@@ -548,6 +896,63 @@ export declare const CreatePalmReadingResponse: zod.ZodObject<{
         date?: string | undefined;
     }>>>;
     compatibility: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    judgment: zod.ZodOptional<zod.ZodNullable<zod.ZodObject<{
+        overall: zod.ZodNumber;
+        verdict: zod.ZodEnum<["good", "mixed", "careful"]>;
+        verdictText: zod.ZodString;
+        scores: zod.ZodObject<{
+            trust: zod.ZodNumber;
+            honesty: zod.ZodNumber;
+            kindness: zod.ZodNumber;
+            communication: zod.ZodNumber;
+            business: zod.ZodNumber;
+            relationship: zod.ZodNumber;
+        }, "strip", zod.ZodTypeAny, {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        }, {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        }>;
+        business: zod.ZodString;
+        relationship: zod.ZodString;
+    }, "strip", zod.ZodTypeAny, {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    }, {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    }>>>;
     createdAt: zod.ZodString;
 }, "strip", zod.ZodTypeAny, {
     id: number;
@@ -577,6 +982,21 @@ export declare const CreatePalmReadingResponse: zod.ZodObject<{
         date?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
+    judgment?: {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    } | null | undefined;
 }, {
     id: number;
     kind: "face" | "palm" | "voice" | "astro" | "combo";
@@ -605,6 +1025,21 @@ export declare const CreatePalmReadingResponse: zod.ZodObject<{
         date?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
+    judgment?: {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    } | null | undefined;
 }>;
 /**
  * @summary Transcribe a voice recording and create a conversation reading
@@ -665,6 +1100,63 @@ export declare const CreateVoiceReadingResponse: zod.ZodObject<{
         date?: string | undefined;
     }>>>;
     compatibility: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    judgment: zod.ZodOptional<zod.ZodNullable<zod.ZodObject<{
+        overall: zod.ZodNumber;
+        verdict: zod.ZodEnum<["good", "mixed", "careful"]>;
+        verdictText: zod.ZodString;
+        scores: zod.ZodObject<{
+            trust: zod.ZodNumber;
+            honesty: zod.ZodNumber;
+            kindness: zod.ZodNumber;
+            communication: zod.ZodNumber;
+            business: zod.ZodNumber;
+            relationship: zod.ZodNumber;
+        }, "strip", zod.ZodTypeAny, {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        }, {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        }>;
+        business: zod.ZodString;
+        relationship: zod.ZodString;
+    }, "strip", zod.ZodTypeAny, {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    }, {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    }>>>;
     createdAt: zod.ZodString;
 }, "strip", zod.ZodTypeAny, {
     id: number;
@@ -694,6 +1186,21 @@ export declare const CreateVoiceReadingResponse: zod.ZodObject<{
         date?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
+    judgment?: {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    } | null | undefined;
 }, {
     id: number;
     kind: "face" | "palm" | "voice" | "astro" | "combo";
@@ -722,6 +1229,21 @@ export declare const CreateVoiceReadingResponse: zod.ZodObject<{
         date?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
+    judgment?: {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    } | null | undefined;
 }>;
 /**
  * @summary Combined insight reading from any mix of face photo, birth details, and a recorded conversation, tailored to a context (job interview, business talk, relationship)
@@ -736,7 +1258,7 @@ export declare const CreateComboReadingBody: zod.ZodObject<{
     audioBase64: zod.ZodOptional<zod.ZodString>;
     language: zod.ZodOptional<zod.ZodString>;
 }, "strip", zod.ZodTypeAny, {
-    context: "interview" | "business" | "relationship" | "general";
+    context: "business" | "relationship" | "interview" | "general";
     imageBase64?: string | undefined;
     mimeType?: string | undefined;
     language?: string | undefined;
@@ -745,7 +1267,7 @@ export declare const CreateComboReadingBody: zod.ZodObject<{
     birthTime?: string | undefined;
     birthPlace?: string | undefined;
 }, {
-    context: "interview" | "business" | "relationship" | "general";
+    context: "business" | "relationship" | "interview" | "general";
     imageBase64?: string | undefined;
     mimeType?: string | undefined;
     language?: string | undefined;
@@ -797,6 +1319,63 @@ export declare const CreateComboReadingResponse: zod.ZodObject<{
         date?: string | undefined;
     }>>>;
     compatibility: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    judgment: zod.ZodOptional<zod.ZodNullable<zod.ZodObject<{
+        overall: zod.ZodNumber;
+        verdict: zod.ZodEnum<["good", "mixed", "careful"]>;
+        verdictText: zod.ZodString;
+        scores: zod.ZodObject<{
+            trust: zod.ZodNumber;
+            honesty: zod.ZodNumber;
+            kindness: zod.ZodNumber;
+            communication: zod.ZodNumber;
+            business: zod.ZodNumber;
+            relationship: zod.ZodNumber;
+        }, "strip", zod.ZodTypeAny, {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        }, {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        }>;
+        business: zod.ZodString;
+        relationship: zod.ZodString;
+    }, "strip", zod.ZodTypeAny, {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    }, {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    }>>>;
     createdAt: zod.ZodString;
 }, "strip", zod.ZodTypeAny, {
     id: number;
@@ -826,6 +1405,21 @@ export declare const CreateComboReadingResponse: zod.ZodObject<{
         date?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
+    judgment?: {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    } | null | undefined;
 }, {
     id: number;
     kind: "face" | "palm" | "voice" | "astro" | "combo";
@@ -854,6 +1448,21 @@ export declare const CreateComboReadingResponse: zod.ZodObject<{
         date?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
+    judgment?: {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    } | null | undefined;
 }>;
 /**
  * @summary Create an astrology reading from birth date, time, and place, with daily lucky color, lucky number, and horoscope
@@ -920,6 +1529,63 @@ export declare const CreateAstroReadingResponse: zod.ZodObject<{
         date?: string | undefined;
     }>>>;
     compatibility: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    judgment: zod.ZodOptional<zod.ZodNullable<zod.ZodObject<{
+        overall: zod.ZodNumber;
+        verdict: zod.ZodEnum<["good", "mixed", "careful"]>;
+        verdictText: zod.ZodString;
+        scores: zod.ZodObject<{
+            trust: zod.ZodNumber;
+            honesty: zod.ZodNumber;
+            kindness: zod.ZodNumber;
+            communication: zod.ZodNumber;
+            business: zod.ZodNumber;
+            relationship: zod.ZodNumber;
+        }, "strip", zod.ZodTypeAny, {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        }, {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        }>;
+        business: zod.ZodString;
+        relationship: zod.ZodString;
+    }, "strip", zod.ZodTypeAny, {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    }, {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    }>>>;
     createdAt: zod.ZodString;
 }, "strip", zod.ZodTypeAny, {
     id: number;
@@ -949,6 +1615,21 @@ export declare const CreateAstroReadingResponse: zod.ZodObject<{
         date?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
+    judgment?: {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    } | null | undefined;
 }, {
     id: number;
     kind: "face" | "palm" | "voice" | "astro" | "combo";
@@ -977,5 +1658,20 @@ export declare const CreateAstroReadingResponse: zod.ZodObject<{
         date?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
+    judgment?: {
+        overall: number;
+        verdict: "good" | "mixed" | "careful";
+        verdictText: string;
+        scores: {
+            trust: number;
+            honesty: number;
+            kindness: number;
+            communication: number;
+            business: number;
+            relationship: number;
+        };
+        business: string;
+        relationship: string;
+    } | null | undefined;
 }>;
 //# sourceMappingURL=api.d.ts.map

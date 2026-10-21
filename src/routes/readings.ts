@@ -201,6 +201,7 @@ router.post("/readings/face", async (req, res): Promise<void> => {
       interactionTips: analysis.interactionTips,
       details: analysis.details,
       compatibility: analysis.compatibility ?? null,
+      judgment: analysis.judgment ?? null,
       portraitImage,
     })
     .returning();
@@ -235,6 +236,7 @@ router.post("/readings/palm", async (req, res): Promise<void> => {
       interactionTips: analysis.interactionTips,
       details: analysis.details,
       compatibility: analysis.compatibility ?? null,
+      judgment: analysis.judgment ?? null,
     })
     .returning();
   res.status(201).json(GetReadingResponse.parse(serializeReading(row)));
@@ -318,6 +320,7 @@ router.post("/readings/voice", async (req, res): Promise<void> => {
       interactionTips: analysis.interactionTips,
       details: analysis.details,
       compatibility: analysis.compatibility ?? null,
+      judgment: analysis.judgment ?? null,
       transcript,
     })
     .returning();
@@ -544,6 +547,7 @@ router.post("/readings/combo", async (req, res): Promise<void> => {
       interactionTips: analysis.interactionTips,
       details: analysis.details,
       compatibility: analysis.compatibility ?? null,
+      judgment: analysis.judgment ?? null,
       transcript: transcript ?? null,
       zodiacSign: analysis.zodiacSign ?? null,
     })

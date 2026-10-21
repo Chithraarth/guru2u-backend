@@ -14,7 +14,80 @@ export interface PersonaAnalysis {
   details: string;
   portraitPrompt?: string;
   compatibility?: string;
+  judgment?: Judgment;
 }
+
+export interface Judgment {
+  overall: number;
+  verdict: "good" | "mixed" | "careful";
+  verdictText: string;
+  scores: {
+    trust: number;
+    honesty: number;
+    kindness: number;
+    communication: number;
+    business: number;
+    relationship: number;
+  };
+  business: string;
+  relationship: string;
+}
+
+const SCORE_KEYS = ["trust", "honesty", "kindness", "communication", "business", "relationship"] as const;
+
+function pct(v: unknown): number {
+  const n = Math.round(Number(v));
+  return Number.isFinite(n) ? Math.max(1, Math.min(100, n)) : 50;
+}
+
+function parseJudgment(raw: unknown): Judgment | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const j = raw as Record<string, unknown>;
+  const scores = (j.scores ?? {}) as Record<string, unknown>;
+  if (!SCORE_KEYS.every((k) => scores[k] !== undefined)) return undefined;
+  const overall = pct(j.overall);
+  const verdict = j.verdict === "good" || j.verdict === "careful" || j.verdict === "mixed"
+    ? j.verdict
+    : overall >= 70 ? "good" : overall >= 45 ? "mixed" : "careful";
+  return {
+    overall,
+    verdict,
+    verdictText: typeof j.verdictText === "string" ? j.verdictText.trim() : "",
+    scores: Object.fromEntries(SCORE_KEYS.map((k) => [k, pct(scores[k])])) as Judgment["scores"],
+    business: typeof j.business === "string" ? j.business.trim() : "",
+    relationship: typeof j.relationship === "string" ? j.relationship.trim() : "",
+  };
+}
+
+const JUDGMENT_PROPERTY: Schema = {
+  type: Type.OBJECT,
+  description:
+    "An honest judgment of the OTHER person with scores from 1 to 100. Base every score on the evidence; do not inflate. Use the full range: a person with clear red flags should score low.",
+  properties: {
+    overall: { type: Type.INTEGER, description: "1-100: how good and safe this person is to deal with overall" },
+    verdict: {
+      type: Type.STRING,
+      enum: ["good", "mixed", "careful"],
+      description: "good = a genuinely good person to deal with, mixed = some caution, careful = be careful with them",
+    },
+    verdictText: { type: Type.STRING, description: 'A short verdict, max 8 words, e.g. "A genuinely good person to work with"' },
+    scores: {
+      type: Type.OBJECT,
+      properties: {
+        trust: { type: Type.INTEGER, description: "1-100 how far the user can trust them" },
+        honesty: { type: Type.INTEGER, description: "1-100 how honest and straightforward they are" },
+        kindness: { type: Type.INTEGER, description: "1-100 how kind and good-hearted they are" },
+        communication: { type: Type.INTEGER, description: "1-100 how well the user and they will communicate" },
+        business: { type: Type.INTEGER, description: "1-100 how well a business or work relationship with them will go" },
+        relationship: { type: Type.INTEGER, description: "1-100 how well a personal or romantic relationship with them will go" },
+      },
+      required: ["trust", "honesty", "kindness", "communication", "business", "relationship"],
+    },
+    business: { type: Type.STRING, description: "1-2 sentences: how a business or work relationship with them will go" },
+    relationship: { type: Type.STRING, description: "1-2 sentences: how a personal or love relationship with them will go" },
+  },
+  required: ["overall", "verdict", "verdictText", "scores", "business", "relationship"],
+};
 
 /** The signed-in user's own saved details, used to compare them with others. */
 export interface SelfContext {
@@ -84,6 +157,7 @@ const BASE_ANALYSIS_PROPERTIES = {
     description:
       "Only when the user's own profile is given: 3-5 sentences on how things will go between the user and this person, and how the user should handle them. Otherwise leave empty.",
   },
+  judgment: JUDGMENT_PROPERTY,
   portraitPrompt: {
     type: Type.STRING,
     description:
@@ -94,7 +168,7 @@ const BASE_ANALYSIS_PROPERTIES = {
 const PERSONA_ANALYSIS_SCHEMA: Schema = {
   type: Type.OBJECT,
   properties: BASE_ANALYSIS_PROPERTIES,
-  required: ["archetype", "title", "summary", "traits", "strengths", "guidance"],
+  required: ["archetype", "title", "summary", "traits", "strengths", "guidance", "judgment"],
 };
 
 // Instructs the model to write all user-visible reading content in the
@@ -132,6 +206,7 @@ function parseAnalysis(raw: string): PersonaAnalysis {
     details: parsed.details ?? "",
     portraitPrompt: parsed.portraitPrompt,
     compatibility: typeof parsed.compatibility === "string" && parsed.compatibility.trim() ? parsed.compatibility.trim() : undefined,
+    judgment: parseJudgment((parsed as { judgment?: unknown }).judgment),
   };
 }
 
@@ -287,7 +362,7 @@ const COMBO_ANALYSIS_SCHEMA: Schema = {
     ...BASE_ANALYSIS_PROPERTIES,
     zodiacSign: { type: Type.STRING, description: "Their sun sign derived from the birth date, if provided" },
   },
-  required: ["archetype", "title", "summary", "traits", "strengths", "guidance"],
+  required: ["archetype", "title", "summary", "traits", "strengths", "guidance", "judgment"],
 };
 
 export async function analyzeCombo(input: {
@@ -452,10 +527,12 @@ export interface DailyAnalysis extends AstroAnalysis {
   };
 }
 
+const { judgment: _noJudgment, ...DAILY_BASE_PROPERTIES } = BASE_ANALYSIS_PROPERTIES;
+
 const DAILY_SCHEMA: Schema = {
   type: Type.OBJECT,
   properties: {
-    ...BASE_ANALYSIS_PROPERTIES,
+    ...DAILY_BASE_PROPERTIES,
     zodiacSign: { type: Type.STRING, description: 'The user\'s sun sign, e.g. "Leo"' },
     luckyColor: { type: Type.STRING, description: 'Today\'s lucky color for the user, e.g. "Emerald Green"' },
     luckyNumber: { type: Type.STRING, description: 'Today\'s lucky number as a string, e.g. "7"' },
@@ -504,6 +581,7 @@ export async function analyzeSelfDaily(
   }
   return {
     ...base,
+    judgment: undefined,
     zodiacSign: str("zodiacSign"),
     luckyColor: str("luckyColor"),
     luckyNumber: str("luckyNumber"),
