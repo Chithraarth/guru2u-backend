@@ -37,6 +37,32 @@ export declare const ListReadingsResponseItem: zod.ZodObject<{
     luckyColor: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     luckyNumber: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     dailyHoroscope: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    daily: zod.ZodOptional<zod.ZodNullable<zod.ZodObject<{
+        luckyGemstone: zod.ZodString;
+        luckyOutfit: zod.ZodString;
+        luckyDay: zod.ZodString;
+        dayOutlook: zod.ZodString;
+        healthCare: zod.ZodString;
+        temperCare: zod.ZodString;
+        date: zod.ZodOptional<zod.ZodString>;
+    }, "strip", zod.ZodTypeAny, {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    }, {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    }>>>;
+    compatibility: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     createdAt: zod.ZodString;
 }, "strip", zod.ZodTypeAny, {
     id: number;
@@ -56,6 +82,16 @@ export declare const ListReadingsResponseItem: zod.ZodObject<{
     luckyColor?: string | null | undefined;
     luckyNumber?: string | null | undefined;
     dailyHoroscope?: string | null | undefined;
+    daily?: {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    } | null | undefined;
+    compatibility?: string | null | undefined;
 }, {
     id: number;
     kind: "face" | "palm" | "voice" | "astro" | "combo";
@@ -74,6 +110,16 @@ export declare const ListReadingsResponseItem: zod.ZodObject<{
     luckyColor?: string | null | undefined;
     luckyNumber?: string | null | undefined;
     dailyHoroscope?: string | null | undefined;
+    daily?: {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    } | null | undefined;
+    compatibility?: string | null | undefined;
 }>;
 export declare const ListReadingsResponse: zod.ZodArray<zod.ZodObject<{
     id: zod.ZodNumber;
@@ -92,6 +138,32 @@ export declare const ListReadingsResponse: zod.ZodArray<zod.ZodObject<{
     luckyColor: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     luckyNumber: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     dailyHoroscope: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    daily: zod.ZodOptional<zod.ZodNullable<zod.ZodObject<{
+        luckyGemstone: zod.ZodString;
+        luckyOutfit: zod.ZodString;
+        luckyDay: zod.ZodString;
+        dayOutlook: zod.ZodString;
+        healthCare: zod.ZodString;
+        temperCare: zod.ZodString;
+        date: zod.ZodOptional<zod.ZodString>;
+    }, "strip", zod.ZodTypeAny, {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    }, {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    }>>>;
+    compatibility: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     createdAt: zod.ZodString;
 }, "strip", zod.ZodTypeAny, {
     id: number;
@@ -111,6 +183,16 @@ export declare const ListReadingsResponse: zod.ZodArray<zod.ZodObject<{
     luckyColor?: string | null | undefined;
     luckyNumber?: string | null | undefined;
     dailyHoroscope?: string | null | undefined;
+    daily?: {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    } | null | undefined;
+    compatibility?: string | null | undefined;
 }, {
     id: number;
     kind: "face" | "palm" | "voice" | "astro" | "combo";
@@ -129,6 +211,16 @@ export declare const ListReadingsResponse: zod.ZodArray<zod.ZodObject<{
     luckyColor?: string | null | undefined;
     luckyNumber?: string | null | undefined;
     dailyHoroscope?: string | null | undefined;
+    daily?: {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    } | null | undefined;
+    compatibility?: string | null | undefined;
 }>, "many">;
 /**
  * @summary Summary stats about readings
@@ -185,6 +277,32 @@ export declare const GetReadingResponse: zod.ZodObject<{
     luckyColor: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     luckyNumber: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     dailyHoroscope: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    daily: zod.ZodOptional<zod.ZodNullable<zod.ZodObject<{
+        luckyGemstone: zod.ZodString;
+        luckyOutfit: zod.ZodString;
+        luckyDay: zod.ZodString;
+        dayOutlook: zod.ZodString;
+        healthCare: zod.ZodString;
+        temperCare: zod.ZodString;
+        date: zod.ZodOptional<zod.ZodString>;
+    }, "strip", zod.ZodTypeAny, {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    }, {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    }>>>;
+    compatibility: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     createdAt: zod.ZodString;
 }, "strip", zod.ZodTypeAny, {
     id: number;
@@ -204,6 +322,16 @@ export declare const GetReadingResponse: zod.ZodObject<{
     luckyColor?: string | null | undefined;
     luckyNumber?: string | null | undefined;
     dailyHoroscope?: string | null | undefined;
+    daily?: {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    } | null | undefined;
+    compatibility?: string | null | undefined;
 }, {
     id: number;
     kind: "face" | "palm" | "voice" | "astro" | "combo";
@@ -222,6 +350,16 @@ export declare const GetReadingResponse: zod.ZodObject<{
     luckyColor?: string | null | undefined;
     luckyNumber?: string | null | undefined;
     dailyHoroscope?: string | null | undefined;
+    daily?: {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    } | null | undefined;
+    compatibility?: string | null | undefined;
 }>;
 /**
  * @summary Delete a reading
@@ -267,6 +405,32 @@ export declare const CreateFaceReadingResponse: zod.ZodObject<{
     luckyColor: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     luckyNumber: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     dailyHoroscope: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    daily: zod.ZodOptional<zod.ZodNullable<zod.ZodObject<{
+        luckyGemstone: zod.ZodString;
+        luckyOutfit: zod.ZodString;
+        luckyDay: zod.ZodString;
+        dayOutlook: zod.ZodString;
+        healthCare: zod.ZodString;
+        temperCare: zod.ZodString;
+        date: zod.ZodOptional<zod.ZodString>;
+    }, "strip", zod.ZodTypeAny, {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    }, {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    }>>>;
+    compatibility: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     createdAt: zod.ZodString;
 }, "strip", zod.ZodTypeAny, {
     id: number;
@@ -286,6 +450,16 @@ export declare const CreateFaceReadingResponse: zod.ZodObject<{
     luckyColor?: string | null | undefined;
     luckyNumber?: string | null | undefined;
     dailyHoroscope?: string | null | undefined;
+    daily?: {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    } | null | undefined;
+    compatibility?: string | null | undefined;
 }, {
     id: number;
     kind: "face" | "palm" | "voice" | "astro" | "combo";
@@ -304,6 +478,16 @@ export declare const CreateFaceReadingResponse: zod.ZodObject<{
     luckyColor?: string | null | undefined;
     luckyNumber?: string | null | undefined;
     dailyHoroscope?: string | null | undefined;
+    daily?: {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    } | null | undefined;
+    compatibility?: string | null | undefined;
 }>;
 /**
  * @summary Analyze a palm photo and create a palm reading
@@ -338,6 +522,32 @@ export declare const CreatePalmReadingResponse: zod.ZodObject<{
     luckyColor: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     luckyNumber: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     dailyHoroscope: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    daily: zod.ZodOptional<zod.ZodNullable<zod.ZodObject<{
+        luckyGemstone: zod.ZodString;
+        luckyOutfit: zod.ZodString;
+        luckyDay: zod.ZodString;
+        dayOutlook: zod.ZodString;
+        healthCare: zod.ZodString;
+        temperCare: zod.ZodString;
+        date: zod.ZodOptional<zod.ZodString>;
+    }, "strip", zod.ZodTypeAny, {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    }, {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    }>>>;
+    compatibility: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     createdAt: zod.ZodString;
 }, "strip", zod.ZodTypeAny, {
     id: number;
@@ -357,6 +567,16 @@ export declare const CreatePalmReadingResponse: zod.ZodObject<{
     luckyColor?: string | null | undefined;
     luckyNumber?: string | null | undefined;
     dailyHoroscope?: string | null | undefined;
+    daily?: {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    } | null | undefined;
+    compatibility?: string | null | undefined;
 }, {
     id: number;
     kind: "face" | "palm" | "voice" | "astro" | "combo";
@@ -375,6 +595,16 @@ export declare const CreatePalmReadingResponse: zod.ZodObject<{
     luckyColor?: string | null | undefined;
     luckyNumber?: string | null | undefined;
     dailyHoroscope?: string | null | undefined;
+    daily?: {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    } | null | undefined;
+    compatibility?: string | null | undefined;
 }>;
 /**
  * @summary Transcribe a voice recording and create a conversation reading
@@ -409,6 +639,32 @@ export declare const CreateVoiceReadingResponse: zod.ZodObject<{
     luckyColor: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     luckyNumber: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     dailyHoroscope: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    daily: zod.ZodOptional<zod.ZodNullable<zod.ZodObject<{
+        luckyGemstone: zod.ZodString;
+        luckyOutfit: zod.ZodString;
+        luckyDay: zod.ZodString;
+        dayOutlook: zod.ZodString;
+        healthCare: zod.ZodString;
+        temperCare: zod.ZodString;
+        date: zod.ZodOptional<zod.ZodString>;
+    }, "strip", zod.ZodTypeAny, {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    }, {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    }>>>;
+    compatibility: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     createdAt: zod.ZodString;
 }, "strip", zod.ZodTypeAny, {
     id: number;
@@ -428,6 +684,16 @@ export declare const CreateVoiceReadingResponse: zod.ZodObject<{
     luckyColor?: string | null | undefined;
     luckyNumber?: string | null | undefined;
     dailyHoroscope?: string | null | undefined;
+    daily?: {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    } | null | undefined;
+    compatibility?: string | null | undefined;
 }, {
     id: number;
     kind: "face" | "palm" | "voice" | "astro" | "combo";
@@ -446,6 +712,16 @@ export declare const CreateVoiceReadingResponse: zod.ZodObject<{
     luckyColor?: string | null | undefined;
     luckyNumber?: string | null | undefined;
     dailyHoroscope?: string | null | undefined;
+    daily?: {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    } | null | undefined;
+    compatibility?: string | null | undefined;
 }>;
 /**
  * @summary Combined insight reading from any mix of face photo, birth details, and a recorded conversation, tailored to a context (job interview, business talk, relationship)
@@ -495,6 +771,32 @@ export declare const CreateComboReadingResponse: zod.ZodObject<{
     luckyColor: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     luckyNumber: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     dailyHoroscope: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    daily: zod.ZodOptional<zod.ZodNullable<zod.ZodObject<{
+        luckyGemstone: zod.ZodString;
+        luckyOutfit: zod.ZodString;
+        luckyDay: zod.ZodString;
+        dayOutlook: zod.ZodString;
+        healthCare: zod.ZodString;
+        temperCare: zod.ZodString;
+        date: zod.ZodOptional<zod.ZodString>;
+    }, "strip", zod.ZodTypeAny, {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    }, {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    }>>>;
+    compatibility: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     createdAt: zod.ZodString;
 }, "strip", zod.ZodTypeAny, {
     id: number;
@@ -514,6 +816,16 @@ export declare const CreateComboReadingResponse: zod.ZodObject<{
     luckyColor?: string | null | undefined;
     luckyNumber?: string | null | undefined;
     dailyHoroscope?: string | null | undefined;
+    daily?: {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    } | null | undefined;
+    compatibility?: string | null | undefined;
 }, {
     id: number;
     kind: "face" | "palm" | "voice" | "astro" | "combo";
@@ -532,25 +844,38 @@ export declare const CreateComboReadingResponse: zod.ZodObject<{
     luckyColor?: string | null | undefined;
     luckyNumber?: string | null | undefined;
     dailyHoroscope?: string | null | undefined;
+    daily?: {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    } | null | undefined;
+    compatibility?: string | null | undefined;
 }>;
 /**
  * @summary Create an astrology reading from birth date, time, and place, with daily lucky color, lucky number, and horoscope
  */
 export declare const CreateAstroReadingBody: zod.ZodObject<{
-    birthDate: zod.ZodString;
+    birthDate: zod.ZodOptional<zod.ZodString>;
     birthTime: zod.ZodOptional<zod.ZodString>;
-    birthPlace: zod.ZodString;
+    birthPlace: zod.ZodOptional<zod.ZodString>;
+    today: zod.ZodOptional<zod.ZodString>;
     language: zod.ZodOptional<zod.ZodString>;
 }, "strip", zod.ZodTypeAny, {
-    birthDate: string;
-    birthPlace: string;
     language?: string | undefined;
+    birthDate?: string | undefined;
     birthTime?: string | undefined;
+    birthPlace?: string | undefined;
+    today?: string | undefined;
 }, {
-    birthDate: string;
-    birthPlace: string;
     language?: string | undefined;
+    birthDate?: string | undefined;
     birthTime?: string | undefined;
+    birthPlace?: string | undefined;
+    today?: string | undefined;
 }>;
 export declare const CreateAstroReadingResponse: zod.ZodObject<{
     id: zod.ZodNumber;
@@ -569,6 +894,32 @@ export declare const CreateAstroReadingResponse: zod.ZodObject<{
     luckyColor: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     luckyNumber: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     dailyHoroscope: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    daily: zod.ZodOptional<zod.ZodNullable<zod.ZodObject<{
+        luckyGemstone: zod.ZodString;
+        luckyOutfit: zod.ZodString;
+        luckyDay: zod.ZodString;
+        dayOutlook: zod.ZodString;
+        healthCare: zod.ZodString;
+        temperCare: zod.ZodString;
+        date: zod.ZodOptional<zod.ZodString>;
+    }, "strip", zod.ZodTypeAny, {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    }, {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    }>>>;
+    compatibility: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     createdAt: zod.ZodString;
 }, "strip", zod.ZodTypeAny, {
     id: number;
@@ -588,6 +939,16 @@ export declare const CreateAstroReadingResponse: zod.ZodObject<{
     luckyColor?: string | null | undefined;
     luckyNumber?: string | null | undefined;
     dailyHoroscope?: string | null | undefined;
+    daily?: {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    } | null | undefined;
+    compatibility?: string | null | undefined;
 }, {
     id: number;
     kind: "face" | "palm" | "voice" | "astro" | "combo";
@@ -606,5 +967,15 @@ export declare const CreateAstroReadingResponse: zod.ZodObject<{
     luckyColor?: string | null | undefined;
     luckyNumber?: string | null | undefined;
     dailyHoroscope?: string | null | undefined;
+    daily?: {
+        luckyGemstone: string;
+        luckyOutfit: string;
+        luckyDay: string;
+        dayOutlook: string;
+        healthCare: string;
+        temperCare: string;
+        date?: string | undefined;
+    } | null | undefined;
+    compatibility?: string | null | undefined;
 }>;
 //# sourceMappingURL=api.d.ts.map

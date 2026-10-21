@@ -1,4 +1,14 @@
 import { z } from "zod/v4";
+export interface DailyExtras {
+    luckyGemstone: string;
+    luckyOutfit: string;
+    luckyDay: string;
+    dayOutlook: string;
+    healthCare: string;
+    temperCare: string;
+    /** The user's local date this daily reading is for (YYYY-MM-DD). */
+    date?: string;
+}
 export declare const readingsTable: import("drizzle-orm/pg-core").PgTableWithColumns<{
     name: "readings";
     schema: undefined;
@@ -298,6 +308,42 @@ export declare const readingsTable: import("drizzle-orm/pg-core").PgTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
+        daily: import("drizzle-orm/pg-core").PgColumn<{
+            name: "daily";
+            tableName: "readings";
+            dataType: "json";
+            columnType: "PgJsonb";
+            data: DailyExtras;
+            driverParam: unknown;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {
+            $type: DailyExtras;
+        }>;
+        compatibility: import("drizzle-orm/pg-core").PgColumn<{
+            name: "compatibility";
+            tableName: "readings";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
         createdAt: import("drizzle-orm/pg-core").PgColumn<{
             name: "created_at";
             tableName: "readings";
@@ -335,6 +381,8 @@ export declare const insertReadingSchema: z.ZodObject<{
     luckyColor: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     luckyNumber: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     dailyHoroscope: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    daily: z.ZodOptional<z.ZodNullable<z.ZodType<DailyExtras, DailyExtras, z.core.$ZodTypeInternals<DailyExtras, DailyExtras>>>>;
+    compatibility: z.ZodOptional<z.ZodNullable<z.ZodString>>;
 }, {
     out: {};
     in: {};

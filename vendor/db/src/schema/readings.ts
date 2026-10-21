@@ -2,6 +2,17 @@ import { pgTable, text, serial, timestamp, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
+export interface DailyExtras {
+  luckyGemstone: string;
+  luckyOutfit: string;
+  luckyDay: string;
+  dayOutlook: string;
+  healthCare: string;
+  temperCare: string;
+  /** The user's local date this daily reading is for (YYYY-MM-DD). */
+  date?: string;
+}
+
 export const readingsTable = pgTable("readings", {
   id: serial("id").primaryKey(),
   userId: text("user_id"),
@@ -20,6 +31,10 @@ export const readingsTable = pgTable("readings", {
   luckyColor: text("lucky_color"),
   luckyNumber: text("lucky_number"),
   dailyHoroscope: text("daily_horoscope"),
+  // Personal daily reading extras (astro readings about the user themself).
+  daily: jsonb("daily").$type<DailyExtras>(),
+  // How things will go between the user and the person read.
+  compatibility: text("compatibility"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

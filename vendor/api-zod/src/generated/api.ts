@@ -37,6 +37,16 @@ export const ListReadingsResponseItem = zod.object({
   "luckyColor": zod.string().nullish().describe('Today\'s favourite \/ lucky color (astro readings only)'),
   "luckyNumber": zod.string().nullish().describe('Today\'s lucky number (astro readings only)'),
   "dailyHoroscope": zod.string().nullish().describe('Today\'s horoscope for the person (astro readings only)'),
+  "daily": zod.object({
+    "luckyGemstone": zod.string(),
+    "luckyOutfit": zod.string(),
+    "luckyDay": zod.string(),
+    "dayOutlook": zod.string(),
+    "healthCare": zod.string(),
+    "temperCare": zod.string(),
+    "date": zod.string().optional()
+  }).nullish().describe('Personal daily reading extras (the user\'s own astro reading)'),
+  "compatibility": zod.string().nullish().describe('How things will go between the user and the person read'),
   "createdAt": zod.string()
 })
 export const ListReadingsResponse = zod.array(ListReadingsResponseItem)
@@ -80,6 +90,16 @@ export const GetReadingResponse = zod.object({
   "luckyColor": zod.string().nullish().describe('Today\'s favourite \/ lucky color (astro readings only)'),
   "luckyNumber": zod.string().nullish().describe('Today\'s lucky number (astro readings only)'),
   "dailyHoroscope": zod.string().nullish().describe('Today\'s horoscope for the person (astro readings only)'),
+  "daily": zod.object({
+    "luckyGemstone": zod.string(),
+    "luckyOutfit": zod.string(),
+    "luckyDay": zod.string(),
+    "dayOutlook": zod.string(),
+    "healthCare": zod.string(),
+    "temperCare": zod.string(),
+    "date": zod.string().optional()
+  }).nullish().describe('Personal daily reading extras (the user\'s own astro reading)'),
+  "compatibility": zod.string().nullish().describe('How things will go between the user and the person read'),
   "createdAt": zod.string()
 })
 
@@ -120,6 +140,16 @@ export const CreateFaceReadingResponse = zod.object({
   "luckyColor": zod.string().nullish().describe('Today\'s favourite \/ lucky color (astro readings only)'),
   "luckyNumber": zod.string().nullish().describe('Today\'s lucky number (astro readings only)'),
   "dailyHoroscope": zod.string().nullish().describe('Today\'s horoscope for the person (astro readings only)'),
+  "daily": zod.object({
+    "luckyGemstone": zod.string(),
+    "luckyOutfit": zod.string(),
+    "luckyDay": zod.string(),
+    "dayOutlook": zod.string(),
+    "healthCare": zod.string(),
+    "temperCare": zod.string(),
+    "date": zod.string().optional()
+  }).nullish().describe('Personal daily reading extras (the user\'s own astro reading)'),
+  "compatibility": zod.string().nullish().describe('How things will go between the user and the person read'),
   "createdAt": zod.string()
 })
 
@@ -150,6 +180,16 @@ export const CreatePalmReadingResponse = zod.object({
   "luckyColor": zod.string().nullish().describe('Today\'s favourite \/ lucky color (astro readings only)'),
   "luckyNumber": zod.string().nullish().describe('Today\'s lucky number (astro readings only)'),
   "dailyHoroscope": zod.string().nullish().describe('Today\'s horoscope for the person (astro readings only)'),
+  "daily": zod.object({
+    "luckyGemstone": zod.string(),
+    "luckyOutfit": zod.string(),
+    "luckyDay": zod.string(),
+    "dayOutlook": zod.string(),
+    "healthCare": zod.string(),
+    "temperCare": zod.string(),
+    "date": zod.string().optional()
+  }).nullish().describe('Personal daily reading extras (the user\'s own astro reading)'),
+  "compatibility": zod.string().nullish().describe('How things will go between the user and the person read'),
   "createdAt": zod.string()
 })
 
@@ -180,6 +220,16 @@ export const CreateVoiceReadingResponse = zod.object({
   "luckyColor": zod.string().nullish().describe('Today\'s favourite \/ lucky color (astro readings only)'),
   "luckyNumber": zod.string().nullish().describe('Today\'s lucky number (astro readings only)'),
   "dailyHoroscope": zod.string().nullish().describe('Today\'s horoscope for the person (astro readings only)'),
+  "daily": zod.object({
+    "luckyGemstone": zod.string(),
+    "luckyOutfit": zod.string(),
+    "luckyDay": zod.string(),
+    "dayOutlook": zod.string(),
+    "healthCare": zod.string(),
+    "temperCare": zod.string(),
+    "date": zod.string().optional()
+  }).nullish().describe('Personal daily reading extras (the user\'s own astro reading)'),
+  "compatibility": zod.string().nullish().describe('How things will go between the user and the person read'),
   "createdAt": zod.string()
 })
 
@@ -215,6 +265,16 @@ export const CreateComboReadingResponse = zod.object({
   "luckyColor": zod.string().nullish().describe('Today\'s favourite \/ lucky color (astro readings only)'),
   "luckyNumber": zod.string().nullish().describe('Today\'s lucky number (astro readings only)'),
   "dailyHoroscope": zod.string().nullish().describe('Today\'s horoscope for the person (astro readings only)'),
+  "daily": zod.object({
+    "luckyGemstone": zod.string(),
+    "luckyOutfit": zod.string(),
+    "luckyDay": zod.string(),
+    "dayOutlook": zod.string(),
+    "healthCare": zod.string(),
+    "temperCare": zod.string(),
+    "date": zod.string().optional()
+  }).nullish().describe('Personal daily reading extras (the user\'s own astro reading)'),
+  "compatibility": zod.string().nullish().describe('How things will go between the user and the person read'),
   "createdAt": zod.string()
 })
 
@@ -223,9 +283,10 @@ export const CreateComboReadingResponse = zod.object({
  * @summary Create an astrology reading from birth date, time, and place, with daily lucky color, lucky number, and horoscope
  */
 export const CreateAstroReadingBody = zod.object({
-  "birthDate": zod.string().describe('Birth date in YYYY-MM-DD format'),
+  "birthDate": zod.string().optional().describe('Birth date in YYYY-MM-DD format; omit to use the signed-in user\'s saved details'),
   "birthTime": zod.string().optional().describe('Birth time in HH:MM (24h) format, optional but improves accuracy'),
-  "birthPlace": zod.string().describe('City \/ country of birth'),
+  "birthPlace": zod.string().optional().describe('City \/ country of birth'),
+  "today": zod.string().optional().describe('The user\'s local date (YYYY-MM-DD), for the once-a-day personal reading'),
   "language": zod.string().optional().describe('BCP-47 language code (e.g. \"hi\", \"ar\") the reading content should be written in; defaults to English')
 })
 
@@ -246,6 +307,16 @@ export const CreateAstroReadingResponse = zod.object({
   "luckyColor": zod.string().nullish().describe('Today\'s favourite \/ lucky color (astro readings only)'),
   "luckyNumber": zod.string().nullish().describe('Today\'s lucky number (astro readings only)'),
   "dailyHoroscope": zod.string().nullish().describe('Today\'s horoscope for the person (astro readings only)'),
+  "daily": zod.object({
+    "luckyGemstone": zod.string(),
+    "luckyOutfit": zod.string(),
+    "luckyDay": zod.string(),
+    "dayOutlook": zod.string(),
+    "healthCare": zod.string(),
+    "temperCare": zod.string(),
+    "date": zod.string().optional()
+  }).nullish().describe('Personal daily reading extras (the user\'s own astro reading)'),
+  "compatibility": zod.string().nullish().describe('How things will go between the user and the person read'),
   "createdAt": zod.string()
 })
 
