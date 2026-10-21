@@ -25,6 +25,8 @@ import {
   analyzeConversation,
   analyzeAstrology,
   analyzeCombo,
+  analyzeSelfDaily,
+  type SelfContext,
 } from "../lib/persona";
 
 const router: IRouter = Router();
@@ -44,6 +46,20 @@ async function decrementScanCredit(userId: string) {
     .where(sql`${usersTable.id} = ${userId} AND ${usersTable.scansRemaining} > 0`)
     .returning();
   return user ?? null;
+}
+
+// The signed-in user's own saved details, or null if they haven't saved any.
+async function loadSelf(userId: string): Promise<SelfContext | null> {
+  const [user] = await db.select().from(usersTable).where(eq(usersTable.id, userId));
+  if (!user) return null;
+  const self: SelfContext = {
+    birthDate: user.birthDate,
+    birthTime: user.birthTime,
+    birthPlace: user.birthPlace,
+    faceProfile: user.selfFaceProfile,
+    palmProfile: user.selfPalmProfile,
+  };
+  return self.birthDate || self.faceProfile || self.palmProfile ? self : null;
 }
 
 function isValidCalendarDate(dateStr: string): boolean {
@@ -156,7 +172,7 @@ router.post("/readings/face", async (req, res): Promise<void> => {
   }
 
   const mimeType = parsed.data.mimeType ?? "image/jpeg";
-  const analysis = await analyzeFace(parsed.data.imageBase64, mimeType, parsed.data.language);
+  const analysis = await analyzeFace(parsed.data.imageBase64, mimeType, parsed.data.language, await loadSelf(req.userId!));
 
   let portraitImage: string | null = null;
   if (analysis.portraitPrompt) {
@@ -184,6 +200,8 @@ router.post("/readings/face", async (req, res): Promise<void> => {
       guidance: analysis.guidance,
       interactionTips: analysis.interactionTips,
       details: analysis.details,
+      compatibility: analysis.compatibility ?? null,
+      judgment: analysis.judgment ?? null,
       portraitImage,
     })
     .returning();
@@ -203,7 +221,7 @@ router.post("/readings/palm", async (req, res): Promise<void> => {
   }
 
   const mimeType = parsed.data.mimeType ?? "image/jpeg";
-  const analysis = await analyzePalm(parsed.data.imageBase64, mimeType, parsed.data.language);
+  const analysis = await analyzePalm(parsed.data.imageBase64, mimeType, parsed.data.language, await loadSelf(req.userId!));
   const [row] = await db
     .insert(readingsTable)
     .values({
@@ -217,6 +235,8 @@ router.post("/readings/palm", async (req, res): Promise<void> => {
       guidance: analysis.guidance,
       interactionTips: analysis.interactionTips,
       details: analysis.details,
+      compatibility: analysis.compatibility ?? null,
+      judgment: analysis.judgment ?? null,
     })
     .returning();
   res.status(201).json(GetReadingResponse.parse(serializeReading(row)));
@@ -284,6 +304,7 @@ router.post("/readings/voice", async (req, res): Promise<void> => {
     transcript,
     parsed.data.mode ?? "note",
     parsed.data.language,
+    await loadSelf(req.userId!),
   );
   const [row] = await db
     .insert(readingsTable)
@@ -298,6 +319,8 @@ router.post("/readings/voice", async (req, res): Promise<void> => {
       guidance: analysis.guidance,
       interactionTips: analysis.interactionTips,
       details: analysis.details,
+      compatibility: analysis.compatibility ?? null,
+      judgment: analysis.judgment ?? null,
       transcript,
     })
     .returning();
@@ -310,13 +333,74 @@ router.post("/readings/astro", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
+  const { birthDate, birthTime, birthPlace } = parsed.data;
+
+  // No birth details in the request: the user's own personal daily reading,
+  // from their saved profile. One per day — asking again the same day returns
+  // today's reading without using another credit.
+  if (!birthDate) {
+    const self = await loadSelf(req.userId!);
+    if (!self?.birthDate) {
+      res.status(409).json({ error: "profile_required", message: "Add your birth details in your profile first." });
+      return;
+    }
+    const today =
+      parsed.data.today && isValidCalendarDate(parsed.data.today)
+        ? parsed.data.today
+        : new Date().toISOString().slice(0, 10);
+    const existing = await db
+      .select()
+      .from(readingsTable)
+      .where(
+        and(
+          eq(readingsTable.userId, req.userId!),
+          eq(readingsTable.kind, "astro"),
+          sql`${readingsTable.daily} IS NOT NULL`,
+          sql`(${readingsTable.daily} ->> 'date') = ${today}`,
+        ),
+      )
+      .orderBy(desc(readingsTable.createdAt))
+      .limit(1);
+    if (existing[0]) {
+      res.status(200).json(GetReadingResponse.parse(serializeReading(existing[0])));
+      return;
+    }
+    const debitedSelf = await decrementScanCredit(req.userId!);
+    if (!debitedSelf) {
+      res.status(402).json({ error: "out_of_credits", message: "You're out of reading credits. Buy more to continue." });
+      return;
+    }
+    const daily = await analyzeSelfDaily(self, today, parsed.data.language);
+    const [row] = await db
+      .insert(readingsTable)
+      .values({
+        userId: req.userId,
+        kind: "astro",
+        archetype: daily.archetype,
+        title: daily.title,
+        summary: daily.summary,
+        traits: daily.traits,
+        strengths: daily.strengths,
+        guidance: daily.guidance,
+        interactionTips: daily.interactionTips,
+        details: daily.details,
+        zodiacSign: daily.zodiacSign,
+        luckyColor: daily.luckyColor,
+        luckyNumber: daily.luckyNumber,
+        dailyHoroscope: daily.dailyHoroscope,
+        daily: { ...daily.daily, date: today },
+      })
+      .returning();
+    res.status(201).json(GetReadingResponse.parse(serializeReading(row)));
+    return;
+  }
+
   const debited = await decrementScanCredit(req.userId!);
   if (!debited) {
     res.status(402).json({ error: "out_of_credits", message: "You're out of reading credits. Buy more to continue." });
     return;
   }
 
-  const { birthDate, birthTime, birthPlace } = parsed.data;
   if (!isValidCalendarDate(birthDate)) {
     res.status(400).json({ error: "Please provide a valid birth date (YYYY-MM-DD)." });
     return;
@@ -339,7 +423,7 @@ router.post("/readings/astro", async (req, res): Promise<void> => {
   const analysis = await analyzeAstrology(
     birthDate,
     normalizedTime,
-    birthPlace,
+    birthPlace ?? "unknown",
     todayIso,
     parsed.data.language,
   );
@@ -447,6 +531,7 @@ router.post("/readings/combo", async (req, res): Promise<void> => {
     transcript,
     todayIso: new Date().toISOString().slice(0, 10),
     language: parsed.data.language,
+    self: await loadSelf(req.userId!),
   });
   const [row] = await db
     .insert(readingsTable)
@@ -461,6 +546,8 @@ router.post("/readings/combo", async (req, res): Promise<void> => {
       guidance: analysis.guidance,
       interactionTips: analysis.interactionTips,
       details: analysis.details,
+      compatibility: analysis.compatibility ?? null,
+      judgment: analysis.judgment ?? null,
       transcript: transcript ?? null,
       zodiacSign: analysis.zodiacSign ?? null,
     })
