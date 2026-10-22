@@ -174,9 +174,35 @@ const PERSONA_ANALYSIS_SCHEMA: Schema = {
 // Instructs the model to write all user-visible reading content in the
 // visitor's chosen language. JSON keys stay in English; portraitPrompt stays
 // in English because it feeds an image-generation model.
+// Reading languages the app offers, with the script each must be written in.
+const LANGUAGE_NAMES: Record<string, string> = {
+  hi: "Hindi (Devanagari script)",
+  kn: "Kannada (Kannada script)",
+  ta: "Tamil (Tamil script)",
+  te: "Telugu (Telugu script)",
+  ml: "Malayalam (Malayalam script)",
+  mr: "Marathi (Devanagari script)",
+  gu: "Gujarati (Gujarati script)",
+  bn: "Bengali (Bengali script)",
+  pa: "Punjabi (Gurmukhi script)",
+  or: "Odia (Odia script)",
+  ur: "Urdu (Perso-Arabic script)",
+  as: "Assamese (Assamese script)",
+  es: "Spanish",
+  fr: "French",
+  de: "German",
+  pt: "Portuguese",
+  ar: "Arabic",
+  zh: "Simplified Chinese",
+  ja: "Japanese",
+  ru: "Russian",
+};
+
 export function languageInstruction(language?: string): string {
-  if (!language || language.split("-")[0].toLowerCase() === "en") return "";
-  return `\n\nIMPORTANT: Write ALL user-facing text values ("archetype", "title", "summary", "traits", "strengths", "guidance", "interactionTips", "details", and any horoscope fields) in the language with BCP-47 code "${language}", fluently and naturally as a native speaker would. Keep the JSON keys in English exactly as specified, and keep "portraitPrompt" in English.`;
+  const code = language?.split("-")[0].toLowerCase();
+  if (!code || code === "en") return "";
+  const name = LANGUAGE_NAMES[code] ?? `the language with BCP-47 code "${language}"`;
+  return `\n\nIMPORTANT: Write ALL user-facing text values ("archetype", "title", "summary", "traits", "strengths", "guidance", "interactionTips", "details", "compatibility", the judgment's "verdictText", "business" and "relationship", and all horoscope and daily fields) in ${name}, fluently and naturally as a native speaker would, using simple everyday words. Keep the JSON keys and the judgment "verdict" values in English exactly as specified, keep numbers as digits, and keep "portraitPrompt" in English.`;
 }
 
 function parseAnalysis(raw: string): PersonaAnalysis {
