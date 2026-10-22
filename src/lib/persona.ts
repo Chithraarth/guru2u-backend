@@ -205,6 +205,11 @@ export function languageInstruction(language?: string): string {
   return `\n\nIMPORTANT: Write ALL user-facing text values ("archetype", "title", "summary", "traits", "strengths", "guidance", "interactionTips", "details", "compatibility", the judgment's "verdictText", "business" and "relationship", and all horoscope and daily fields) in ${name}, fluently and naturally as a native speaker would, using simple everyday words. Keep the JSON keys and the judgment "verdict" values in English exactly as specified, keep numbers as digits, and keep "portraitPrompt" in English.`;
 }
 
+/** Turns literal "\\n" sequences the model sometimes writes into real line breaks. */
+export function cleanText(text: string): string {
+  return text.replace(/\\r\\n|\\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+}
+
 function parseAnalysis(raw: string): PersonaAnalysis {
   const parsed = JSON.parse(raw) as Partial<PersonaAnalysis>;
   if (
@@ -219,19 +224,19 @@ function parseAnalysis(raw: string): PersonaAnalysis {
   }
   return {
     archetype: parsed.archetype,
-    title: parsed.title,
-    summary: parsed.summary,
+    title: cleanText(parsed.title),
+    summary: cleanText(parsed.summary),
     traits: parsed.traits,
     strengths: parsed.strengths,
-    guidance: parsed.guidance,
+    guidance: cleanText(parsed.guidance),
     interactionTips: Array.isArray(parsed.interactionTips)
       ? parsed.interactionTips
           .filter((t): t is string => typeof t === "string")
           .map((t) => t.replace(/\*\*/g, "").trim())
       : [],
-    details: parsed.details ?? "",
+    details: cleanText(parsed.details ?? ""),
     portraitPrompt: parsed.portraitPrompt,
-    compatibility: typeof parsed.compatibility === "string" && parsed.compatibility.trim() ? parsed.compatibility.trim() : undefined,
+    compatibility: typeof parsed.compatibility === "string" && parsed.compatibility.trim() ? cleanText(parsed.compatibility) : undefined,
     judgment: parseJudgment((parsed as { judgment?: unknown }).judgment),
   };
 }
@@ -606,7 +611,7 @@ export async function analyzeSelfDaily(
   const raw = textOf(response);
   const base = parseAnalysis(raw);
   const x = JSON.parse(raw) as Record<string, unknown>;
-  const str = (k: string) => (typeof x[k] === "string" ? (x[k] as string).trim() : String(x[k] ?? "")).trim();
+  const str = (k: string) => cleanText(typeof x[k] === "string" ? (x[k] as string) : String(x[k] ?? ""));
   for (const k of ["zodiacSign", "luckyColor", "dailyHoroscope", "luckyGemstone", "luckyOutfit", "luckyDay", "dayOutlook", "healthCare", "temperCare", "loveLife"]) {
     if (!str(k)) throw new Error(`AI response missing ${k}`);
   }
@@ -627,4 +632,76 @@ export async function analyzeSelfDaily(
       loveLife: str("loveLife"),
     },
   };
+}
+
+// ---- Follow-up questions ----
+
+const ANSWER_SCHEMA: Schema = {
+  type: Type.OBJECT,
+  properties: {
+    answer: {
+      type: Type.STRING,
+      description: "A direct, practical answer in 3-6 sentences. No headings or lists.",
+    },
+  },
+  required: ["answer"],
+};
+
+/**
+ * Answers the user's own question about one of their readings, using that
+ * reading and (when saved) the user's own profile.
+ */
+export async function answerQuestion(input: {
+  question: string;
+  reading: {
+    kind: string;
+    archetype: string;
+    title: string;
+    summary: string;
+    guidance: string;
+    details?: string | null;
+    dailyHoroscope?: string | null;
+    zodiacSign?: string | null;
+    compatibility?: string | null;
+    daily?: unknown;
+    judgment?: unknown;
+  };
+  self?: SelfContext | null;
+  todayIso: string;
+  language?: string;
+}): Promise<string> {
+  const r = input.reading;
+  const isOwnDaily = r.kind === "astro" && !!r.daily;
+  const context = [
+    `Reading type: ${isOwnDaily ? "the user's own daily astrology reading" : `a ${r.kind} reading of another person`}`,
+    `Archetype: ${r.archetype}`,
+    `Headline: ${r.title}`,
+    `Summary: ${r.summary}`,
+    r.zodiacSign ? `Sign: ${r.zodiacSign}` : "",
+    r.dailyHoroscope ? `Today's horoscope: ${r.dailyHoroscope}` : "",
+    r.daily ? `Daily details: ${JSON.stringify(r.daily)}` : "",
+    r.judgment ? `Judgment: ${JSON.stringify(r.judgment)}` : "",
+    r.compatibility ? `You and them: ${r.compatibility}` : "",
+    `Guidance: ${r.guidance}`,
+    r.details ? `Details: ${r.details.slice(0, 3000)}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+  const response = await gemini.models.generateContent({
+    model: ANALYSIS_MODEL,
+    contents: [
+      {
+        role: "user",
+        parts: [{ text: `THE READING:\n${context}\n\nToday is ${input.todayIso}.\n\nMY QUESTION: ${input.question}` }],
+      },
+    ],
+    config: {
+      systemInstruction: `You are Guru, a warm, wise and practical guide in an entertainment app that does face, palm, voice and astrology readings. The user asks a follow-up question about one of their readings. Answer it directly and specifically using the reading${hasSelf(input.self) ? " and the user's own profile" : ""}: give a clear view, then concrete advice. Address the user as "you". Keep it grounded and kind; for medical, legal or financial decisions, add one short line suggesting they also consult a qualified professional. If the question is unrelated to the reading, still answer helpfully from the user's chart and situation.${compatibilityInstruction(input.self).replace(/In "compatibility"[\s\S]*$/, "")}${languageInstruction(input.language)}`,
+      responseMimeType: "application/json",
+      responseSchema: ANSWER_SCHEMA,
+    },
+  });
+  const parsed = JSON.parse(textOf(response)) as { answer?: string };
+  if (!parsed.answer?.trim()) throw new Error("AI response missing answer");
+  return cleanText(parsed.answer);
 }

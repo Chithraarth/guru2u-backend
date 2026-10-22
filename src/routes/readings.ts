@@ -1,7 +1,8 @@
 import { Router, type IRouter } from "express";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { requireAuth } from "../middlewares/requireAuth";
-import { db, readingsTable, usersTable } from "@workspace/db";
+import { db, readingsTable, readingQuestionsTable, usersTable } from "@workspace/db";
+import { z } from "zod";
 import {
   CreateFaceReadingBody,
   CreatePalmReadingBody,
@@ -26,6 +27,7 @@ import {
   analyzeAstrology,
   analyzeCombo,
   analyzeSelfDaily,
+  answerQuestion,
   type SelfContext,
 } from "../lib/persona";
 
@@ -135,6 +137,86 @@ router.get("/readings/:id", async (req, res): Promise<void> => {
     return;
   }
   res.json(GetReadingResponse.parse(serializeReading(row)));
+});
+
+const QuestionBody = z.object({
+  question: z.string().trim().min(3).max(500),
+  language: z.string().optional(),
+  today: z.string().optional(),
+});
+
+async function ownReading(id: number, userId: string) {
+  const [row] = await db
+    .select()
+    .from(readingsTable)
+    .where(and(eq(readingsTable.id, id), eq(readingsTable.userId, userId)));
+  return row ?? null;
+}
+
+function serializeQuestion(q: typeof readingQuestionsTable.$inferSelect) {
+  return { id: q.id, question: q.question, answer: q.answer, createdAt: q.createdAt.toISOString() };
+}
+
+// Questions the user has asked about one of their readings, oldest first.
+router.get("/readings/:id/questions", async (req, res): Promise<void> => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || !(await ownReading(id, req.userId!))) {
+    res.status(404).json({ error: "Reading not found" });
+    return;
+  }
+  const rows = await db
+    .select()
+    .from(readingQuestionsTable)
+    .where(and(eq(readingQuestionsTable.readingId, id), eq(readingQuestionsTable.userId, req.userId!)))
+    .orderBy(readingQuestionsTable.createdAt);
+  res.json(rows.map(serializeQuestion));
+});
+
+// Ask a follow-up question about a reading. Costs one reading credit; the
+// credit is refunded if the answer can't be generated.
+router.post("/readings/:id/questions", async (req, res): Promise<void> => {
+  const id = Number(req.params.id);
+  const parsed = QuestionBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Please write a question (3 to 500 characters)." });
+    return;
+  }
+  const reading = Number.isInteger(id) ? await ownReading(id, req.userId!) : null;
+  if (!reading) {
+    res.status(404).json({ error: "Reading not found" });
+    return;
+  }
+  const debited = await decrementScanCredit(req.userId!);
+  if (!debited) {
+    res.status(402).json({ error: "out_of_credits", message: "You're out of reading credits. Buy more to continue." });
+    return;
+  }
+  let answer: string;
+  try {
+    answer = await answerQuestion({
+      question: parsed.data.question,
+      reading,
+      self: await loadSelf(req.userId!),
+      todayIso:
+        parsed.data.today && isValidCalendarDate(parsed.data.today)
+          ? parsed.data.today
+          : new Date().toISOString().slice(0, 10),
+      language: parsed.data.language,
+    });
+  } catch (err) {
+    req.log.error({ err }, "Answering question failed");
+    await db
+      .update(usersTable)
+      .set({ scansRemaining: sql`${usersTable.scansRemaining} + 1` })
+      .where(eq(usersTable.id, req.userId!));
+    res.status(502).json({ error: "Guru couldn't answer right now. Your reading credit was returned — please try again." });
+    return;
+  }
+  const [row] = await db
+    .insert(readingQuestionsTable)
+    .values({ readingId: id, userId: req.userId!, question: parsed.data.question, answer })
+    .returning();
+  res.status(201).json({ ...serializeQuestion(row), scansRemaining: debited.scansRemaining });
 });
 
 router.delete("/readings/:id", async (req, res): Promise<void> => {
