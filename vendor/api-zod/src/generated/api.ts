@@ -44,6 +44,7 @@ export const ListReadingsResponseItem = zod.object({
     "dayOutlook": zod.string(),
     "healthCare": zod.string(),
     "temperCare": zod.string(),
+    "loveLife": zod.string().optional(),
     "date": zod.string().optional()
   }).nullish().describe('Personal daily reading extras (the user\'s own astro reading)'),
   "compatibility": zod.string().nullish().describe('How things will go between the user and the person read'),
@@ -112,6 +113,7 @@ export const GetReadingResponse = zod.object({
     "dayOutlook": zod.string(),
     "healthCare": zod.string(),
     "temperCare": zod.string(),
+    "loveLife": zod.string().optional(),
     "date": zod.string().optional()
   }).nullish().describe('Personal daily reading extras (the user\'s own astro reading)'),
   "compatibility": zod.string().nullish().describe('How things will go between the user and the person read'),
@@ -177,6 +179,7 @@ export const CreateFaceReadingResponse = zod.object({
     "dayOutlook": zod.string(),
     "healthCare": zod.string(),
     "temperCare": zod.string(),
+    "loveLife": zod.string().optional(),
     "date": zod.string().optional()
   }).nullish().describe('Personal daily reading extras (the user\'s own astro reading)'),
   "compatibility": zod.string().nullish().describe('How things will go between the user and the person read'),
@@ -232,6 +235,7 @@ export const CreatePalmReadingResponse = zod.object({
     "dayOutlook": zod.string(),
     "healthCare": zod.string(),
     "temperCare": zod.string(),
+    "loveLife": zod.string().optional(),
     "date": zod.string().optional()
   }).nullish().describe('Personal daily reading extras (the user\'s own astro reading)'),
   "compatibility": zod.string().nullish().describe('How things will go between the user and the person read'),
@@ -287,6 +291,7 @@ export const CreateVoiceReadingResponse = zod.object({
     "dayOutlook": zod.string(),
     "healthCare": zod.string(),
     "temperCare": zod.string(),
+    "loveLife": zod.string().optional(),
     "date": zod.string().optional()
   }).nullish().describe('Personal daily reading extras (the user\'s own astro reading)'),
   "compatibility": zod.string().nullish().describe('How things will go between the user and the person read'),
@@ -347,6 +352,7 @@ export const CreateComboReadingResponse = zod.object({
     "dayOutlook": zod.string(),
     "healthCare": zod.string(),
     "temperCare": zod.string(),
+    "loveLife": zod.string().optional(),
     "date": zod.string().optional()
   }).nullish().describe('Personal daily reading extras (the user\'s own astro reading)'),
   "compatibility": zod.string().nullish().describe('How things will go between the user and the person read'),
@@ -404,6 +410,7 @@ export const CreateAstroReadingResponse = zod.object({
     "dayOutlook": zod.string(),
     "healthCare": zod.string(),
     "temperCare": zod.string(),
+    "loveLife": zod.string().optional(),
     "date": zod.string().optional()
   }).nullish().describe('Personal daily reading extras (the user\'s own astro reading)'),
   "compatibility": zod.string().nullish().describe('How things will go between the user and the person read'),

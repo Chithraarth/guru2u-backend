@@ -44,6 +44,7 @@ export declare const ListReadingsResponseItem: zod.ZodObject<{
         dayOutlook: zod.ZodString;
         healthCare: zod.ZodString;
         temperCare: zod.ZodString;
+        loveLife: zod.ZodOptional<zod.ZodString>;
         date: zod.ZodOptional<zod.ZodString>;
     }, "strip", zod.ZodTypeAny, {
         luckyGemstone: string;
@@ -53,6 +54,7 @@ export declare const ListReadingsResponseItem: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     }, {
         luckyGemstone: string;
         luckyOutfit: string;
@@ -61,6 +63,7 @@ export declare const ListReadingsResponseItem: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     }>>>;
     compatibility: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     judgment: zod.ZodOptional<zod.ZodNullable<zod.ZodObject<{
@@ -147,6 +150,7 @@ export declare const ListReadingsResponseItem: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
     judgment?: {
@@ -190,6 +194,7 @@ export declare const ListReadingsResponseItem: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
     judgment?: {
@@ -232,6 +237,7 @@ export declare const ListReadingsResponse: zod.ZodArray<zod.ZodObject<{
         dayOutlook: zod.ZodString;
         healthCare: zod.ZodString;
         temperCare: zod.ZodString;
+        loveLife: zod.ZodOptional<zod.ZodString>;
         date: zod.ZodOptional<zod.ZodString>;
     }, "strip", zod.ZodTypeAny, {
         luckyGemstone: string;
@@ -241,6 +247,7 @@ export declare const ListReadingsResponse: zod.ZodArray<zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     }, {
         luckyGemstone: string;
         luckyOutfit: string;
@@ -249,6 +256,7 @@ export declare const ListReadingsResponse: zod.ZodArray<zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     }>>>;
     compatibility: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     judgment: zod.ZodOptional<zod.ZodNullable<zod.ZodObject<{
@@ -335,6 +343,7 @@ export declare const ListReadingsResponse: zod.ZodArray<zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
     judgment?: {
@@ -378,6 +387,7 @@ export declare const ListReadingsResponse: zod.ZodArray<zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
     judgment?: {
@@ -458,6 +468,7 @@ export declare const GetReadingResponse: zod.ZodObject<{
         dayOutlook: zod.ZodString;
         healthCare: zod.ZodString;
         temperCare: zod.ZodString;
+        loveLife: zod.ZodOptional<zod.ZodString>;
         date: zod.ZodOptional<zod.ZodString>;
     }, "strip", zod.ZodTypeAny, {
         luckyGemstone: string;
@@ -467,6 +478,7 @@ export declare const GetReadingResponse: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     }, {
         luckyGemstone: string;
         luckyOutfit: string;
@@ -475,6 +487,7 @@ export declare const GetReadingResponse: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     }>>>;
     compatibility: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     judgment: zod.ZodOptional<zod.ZodNullable<zod.ZodObject<{
@@ -561,6 +574,7 @@ export declare const GetReadingResponse: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
     judgment?: {
@@ -604,6 +618,7 @@ export declare const GetReadingResponse: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
     judgment?: {
@@ -673,6 +688,7 @@ export declare const CreateFaceReadingResponse: zod.ZodObject<{
         dayOutlook: zod.ZodString;
         healthCare: zod.ZodString;
         temperCare: zod.ZodString;
+        loveLife: zod.ZodOptional<zod.ZodString>;
         date: zod.ZodOptional<zod.ZodString>;
     }, "strip", zod.ZodTypeAny, {
         luckyGemstone: string;
@@ -682,6 +698,7 @@ export declare const CreateFaceReadingResponse: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     }, {
         luckyGemstone: string;
         luckyOutfit: string;
@@ -690,6 +707,7 @@ export declare const CreateFaceReadingResponse: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     }>>>;
     compatibility: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     judgment: zod.ZodOptional<zod.ZodNullable<zod.ZodObject<{
@@ -776,6 +794,7 @@ export declare const CreateFaceReadingResponse: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
     judgment?: {
@@ -819,6 +838,7 @@ export declare const CreateFaceReadingResponse: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
     judgment?: {
@@ -877,6 +897,7 @@ export declare const CreatePalmReadingResponse: zod.ZodObject<{
         dayOutlook: zod.ZodString;
         healthCare: zod.ZodString;
         temperCare: zod.ZodString;
+        loveLife: zod.ZodOptional<zod.ZodString>;
         date: zod.ZodOptional<zod.ZodString>;
     }, "strip", zod.ZodTypeAny, {
         luckyGemstone: string;
@@ -886,6 +907,7 @@ export declare const CreatePalmReadingResponse: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     }, {
         luckyGemstone: string;
         luckyOutfit: string;
@@ -894,6 +916,7 @@ export declare const CreatePalmReadingResponse: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     }>>>;
     compatibility: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     judgment: zod.ZodOptional<zod.ZodNullable<zod.ZodObject<{
@@ -980,6 +1003,7 @@ export declare const CreatePalmReadingResponse: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
     judgment?: {
@@ -1023,6 +1047,7 @@ export declare const CreatePalmReadingResponse: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
     judgment?: {
@@ -1081,6 +1106,7 @@ export declare const CreateVoiceReadingResponse: zod.ZodObject<{
         dayOutlook: zod.ZodString;
         healthCare: zod.ZodString;
         temperCare: zod.ZodString;
+        loveLife: zod.ZodOptional<zod.ZodString>;
         date: zod.ZodOptional<zod.ZodString>;
     }, "strip", zod.ZodTypeAny, {
         luckyGemstone: string;
@@ -1090,6 +1116,7 @@ export declare const CreateVoiceReadingResponse: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     }, {
         luckyGemstone: string;
         luckyOutfit: string;
@@ -1098,6 +1125,7 @@ export declare const CreateVoiceReadingResponse: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     }>>>;
     compatibility: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     judgment: zod.ZodOptional<zod.ZodNullable<zod.ZodObject<{
@@ -1184,6 +1212,7 @@ export declare const CreateVoiceReadingResponse: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
     judgment?: {
@@ -1227,6 +1256,7 @@ export declare const CreateVoiceReadingResponse: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
     judgment?: {
@@ -1300,6 +1330,7 @@ export declare const CreateComboReadingResponse: zod.ZodObject<{
         dayOutlook: zod.ZodString;
         healthCare: zod.ZodString;
         temperCare: zod.ZodString;
+        loveLife: zod.ZodOptional<zod.ZodString>;
         date: zod.ZodOptional<zod.ZodString>;
     }, "strip", zod.ZodTypeAny, {
         luckyGemstone: string;
@@ -1309,6 +1340,7 @@ export declare const CreateComboReadingResponse: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     }, {
         luckyGemstone: string;
         luckyOutfit: string;
@@ -1317,6 +1349,7 @@ export declare const CreateComboReadingResponse: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     }>>>;
     compatibility: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     judgment: zod.ZodOptional<zod.ZodNullable<zod.ZodObject<{
@@ -1403,6 +1436,7 @@ export declare const CreateComboReadingResponse: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
     judgment?: {
@@ -1446,6 +1480,7 @@ export declare const CreateComboReadingResponse: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
     judgment?: {
@@ -1510,6 +1545,7 @@ export declare const CreateAstroReadingResponse: zod.ZodObject<{
         dayOutlook: zod.ZodString;
         healthCare: zod.ZodString;
         temperCare: zod.ZodString;
+        loveLife: zod.ZodOptional<zod.ZodString>;
         date: zod.ZodOptional<zod.ZodString>;
     }, "strip", zod.ZodTypeAny, {
         luckyGemstone: string;
@@ -1519,6 +1555,7 @@ export declare const CreateAstroReadingResponse: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     }, {
         luckyGemstone: string;
         luckyOutfit: string;
@@ -1527,6 +1564,7 @@ export declare const CreateAstroReadingResponse: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     }>>>;
     compatibility: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     judgment: zod.ZodOptional<zod.ZodNullable<zod.ZodObject<{
@@ -1613,6 +1651,7 @@ export declare const CreateAstroReadingResponse: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
     judgment?: {
@@ -1656,6 +1695,7 @@ export declare const CreateAstroReadingResponse: zod.ZodObject<{
         healthCare: string;
         temperCare: string;
         date?: string | undefined;
+        loveLife?: string | undefined;
     } | null | undefined;
     compatibility?: string | null | undefined;
     judgment?: {

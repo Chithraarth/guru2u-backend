@@ -6,6 +6,8 @@ export interface DailyExtras {
     dayOutlook: string;
     healthCare: string;
     temperCare: string;
+    /** How love life looks today (older readings may not have it). */
+    loveLife?: string;
     /** The user's local date this daily reading is for (YYYY-MM-DD). */
     date?: string;
 }
