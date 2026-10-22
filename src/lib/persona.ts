@@ -174,9 +174,35 @@ const PERSONA_ANALYSIS_SCHEMA: Schema = {
 // Instructs the model to write all user-visible reading content in the
 // visitor's chosen language. JSON keys stay in English; portraitPrompt stays
 // in English because it feeds an image-generation model.
+// Reading languages the app offers, with the script each must be written in.
+const LANGUAGE_NAMES: Record<string, string> = {
+  hi: "Hindi (Devanagari script)",
+  kn: "Kannada (Kannada script)",
+  ta: "Tamil (Tamil script)",
+  te: "Telugu (Telugu script)",
+  ml: "Malayalam (Malayalam script)",
+  mr: "Marathi (Devanagari script)",
+  gu: "Gujarati (Gujarati script)",
+  bn: "Bengali (Bengali script)",
+  pa: "Punjabi (Gurmukhi script)",
+  or: "Odia (Odia script)",
+  ur: "Urdu (Perso-Arabic script)",
+  as: "Assamese (Assamese script)",
+  es: "Spanish",
+  fr: "French",
+  de: "German",
+  pt: "Portuguese",
+  ar: "Arabic",
+  zh: "Simplified Chinese",
+  ja: "Japanese",
+  ru: "Russian",
+};
+
 export function languageInstruction(language?: string): string {
-  if (!language || language.split("-")[0].toLowerCase() === "en") return "";
-  return `\n\nIMPORTANT: Write ALL user-facing text values ("archetype", "title", "summary", "traits", "strengths", "guidance", "interactionTips", "details", and any horoscope fields) in the language with BCP-47 code "${language}", fluently and naturally as a native speaker would. Keep the JSON keys in English exactly as specified, and keep "portraitPrompt" in English.`;
+  const code = language?.split("-")[0].toLowerCase();
+  if (!code || code === "en") return "";
+  const name = LANGUAGE_NAMES[code] ?? `the language with BCP-47 code "${language}"`;
+  return `\n\nIMPORTANT: Write ALL user-facing text values ("archetype", "title", "summary", "traits", "strengths", "guidance", "interactionTips", "details", "compatibility", the judgment's "verdictText", "business" and "relationship", and all horoscope and daily fields) in ${name}, fluently and naturally as a native speaker would, using simple everyday words. Keep the JSON keys and the judgment "verdict" values in English exactly as specified, keep numbers as digits, and keep "portraitPrompt" in English.`;
 }
 
 function parseAnalysis(raw: string): PersonaAnalysis {
@@ -524,6 +550,7 @@ export interface DailyAnalysis extends AstroAnalysis {
     dayOutlook: string;
     healthCare: string;
     temperCare: string;
+    loveLife: string;
   };
 }
 
@@ -549,11 +576,15 @@ const DAILY_SCHEMA: Schema = {
       type: Type.STRING,
       description: "1-2 sentences: be careful about anger/aggression — when it may flare up today and how to keep calm",
     },
+    loveLife: {
+      type: Type.STRING,
+      description: "2-3 sentences: how the user's love life looks today — for a couple, how to connect with their partner; if single, the chances of meeting someone and what to do",
+    },
   },
   required: [
     "archetype", "title", "summary", "traits", "strengths", "guidance",
     "zodiacSign", "luckyColor", "luckyNumber", "dailyHoroscope",
-    "luckyGemstone", "luckyOutfit", "luckyDay", "dayOutlook", "healthCare", "temperCare",
+    "luckyGemstone", "luckyOutfit", "luckyDay", "dayOutlook", "healthCare", "temperCare", "loveLife",
   ],
 };
 
@@ -567,7 +598,7 @@ export async function analyzeSelfDaily(
     model: ANALYSIS_MODEL,
     contents: [{ role: "user", parts: [{ text: `My details:\n${selfContextText(self)}\nToday is ${todayIso}.` }] }],
     config: {
-      systemInstruction: `You are a warm, practical astrologer for an entertainment app. This is the USER'S OWN daily reading: address them directly as "you". Use their birth date, time and place (and their own face and palm readings when given) to work out their sun sign and chart, and give their reading for today (${todayIso}): today's horoscope, lucky color, lucky number, lucky gemstone, what to wear today, their luckiest day this week, how today will go, what to take care of in their health, and a clear warning about anger or aggression and how to stay calm. "archetype" is a label for the user's character today, "summary" describes their personality, "guidance" is advice for today, and "interactionTips" are 3-5 tips for handling people today. Be specific, positive and grounded.${languageInstruction(language)}`,
+      systemInstruction: `You are a warm, practical astrologer for an entertainment app. This is the USER'S OWN daily reading: address them directly as "you". Use their birth date, time and place (and their own face and palm readings when given) to work out their sun sign and chart, and give their reading for today (${todayIso}): today's horoscope, lucky color, lucky number, lucky gemstone, what to wear today, their luckiest day this week, how today will go, how their love life looks today, what to take care of in their health, and a clear warning about anger or aggression and how to stay calm. "archetype" is a label for the user's character today, "summary" describes their personality, "guidance" is advice for today, and "interactionTips" are 3-5 tips for handling people today. Be specific, positive and grounded.${languageInstruction(language)}`,
       responseMimeType: "application/json",
       responseSchema: DAILY_SCHEMA,
     },
@@ -576,7 +607,7 @@ export async function analyzeSelfDaily(
   const base = parseAnalysis(raw);
   const x = JSON.parse(raw) as Record<string, unknown>;
   const str = (k: string) => (typeof x[k] === "string" ? (x[k] as string).trim() : String(x[k] ?? "")).trim();
-  for (const k of ["zodiacSign", "luckyColor", "dailyHoroscope", "luckyGemstone", "luckyOutfit", "luckyDay", "dayOutlook", "healthCare", "temperCare"]) {
+  for (const k of ["zodiacSign", "luckyColor", "dailyHoroscope", "luckyGemstone", "luckyOutfit", "luckyDay", "dayOutlook", "healthCare", "temperCare", "loveLife"]) {
     if (!str(k)) throw new Error(`AI response missing ${k}`);
   }
   return {
@@ -593,6 +624,7 @@ export async function analyzeSelfDaily(
       dayOutlook: str("dayOutlook"),
       healthCare: str("healthCare"),
       temperCare: str("temperCare"),
+      loveLife: str("loveLife"),
     },
   };
 }
