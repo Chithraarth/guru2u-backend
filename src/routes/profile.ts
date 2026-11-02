@@ -1,7 +1,8 @@
 import { Router, type IRouter } from "express";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
-import { db, usersTable, type User } from "@workspace/db";
+import { db, readingQuestionsTable, readingsTable, usersTable, type User } from "@workspace/db";
+import { firebaseAuth } from "../lib/firebase-admin";
 import { requireAuth } from "../middlewares/requireAuth";
 import { summarizeSelf } from "../lib/persona";
 
@@ -107,5 +108,28 @@ for (const kind of ["face", "palm"] as const) {
     res.json(toProfile(user));
   });
 }
+
+// Deletes the signed-in user's account: their readings, follow-up questions,
+// profile and Firebase sign-in. Purchase records are kept (anonymous store
+// transaction IDs) because they are needed for refunds and tax records.
+router.delete("/me/account", async (req, res): Promise<void> => {
+  const userId = req.userId!;
+  await db.transaction(async (tx) => {
+    await tx.delete(readingQuestionsTable).where(eq(readingQuestionsTable.userId, userId));
+    await tx.delete(readingsTable).where(eq(readingsTable.userId, userId));
+    await tx.delete(usersTable).where(eq(usersTable.id, userId));
+  });
+  try {
+    await firebaseAuth.deleteUser(userId);
+  } catch (err) {
+    // Already gone in Firebase is fine; anything else the user can retry.
+    if ((err as { code?: string }).code !== "auth/user-not-found") {
+      req.log.error({ err }, "Firebase user deletion failed");
+      res.status(500).json({ error: "We couldn't finish deleting your account. Please try again." });
+      return;
+    }
+  }
+  res.status(204).end();
+});
 
 export default router;
